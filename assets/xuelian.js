@@ -5,7 +5,7 @@
   'use strict';
   const XL = window.XL;
   if (!XL) return;
-  const endpoint = '/api/ai';
+  const endpoint = document.querySelector('meta[name="ai-endpoint"]')?.content || '/api/ai';   // 同 ai.js：默认同源，Pages 构建走 meta 里的跨域地址
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
   const esc = XL.esc;
