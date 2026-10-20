@@ -2208,12 +2208,20 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
 .lx-week li { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid transparent; }
 .lx-week li.on { background: var(--accent); color: var(--surface); }
 .lx-week li.is-today { border-color: var(--seal); }
+.lx-tracks { list-style: none; margin: 4px 0 0; padding: 0; }
+.lx-track { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.lx-track:first-child { border-top: 0; padding-top: 4px; }
+.lx-track-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lx-track-name { font: 600 17px/1.4 var(--font-read); letter-spacing: .06em; }
+.lx-track-main small { font-size: 14px; color: var(--ink-2); }
+.lx-track-main small b { font: 600 20px/1 var(--font-read); color: var(--accent); margin: 0 1px; }
 
 /* 我在学 */
 .lx-legend { font-size: 12.5px; color: var(--fine); margin: 0 0 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
 .lx-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
 .lx-dot-stable, .lx-bar-stable { background: var(--accent); }
 .lx-dot-covered, .lx-bar-covered { background: color-mix(in srgb, var(--accent) 35%, var(--surface-2)); }
+.lx-dot-due { background: var(--seal); }
 .lx-lessons, .lx-wrong { list-style: none; margin: 0; padding: 0; }
 .lx-lesson { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
 .lx-lesson:first-child { border-top: 0; }
@@ -2225,6 +2233,19 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
 .lx-l-stat b { color: var(--seal); font-weight: 600; }
 .lx-wrong li { font-size: 14px; color: var(--ink-2); padding: 6px 0; border-top: 1px dashed var(--line); }
 .lx-wrong li:first-child { border-top: 0; }
+.lx-wrong-group { padding: 8px 0 4px; border-top: 1px solid var(--line); }
+.lx-wrong-group:first-of-type { border-top: 0; }
+.lx-wrong-group h3 { font: 600 15px/1.4 var(--font-ui); margin: 0; }
+/* 文言实词、文化常识：展开「按词练」「按专题练」 */
+.lx-more { margin-top: 10px; }
+.lx-more summary { cursor: pointer; color: var(--accent); font-size: 14px; padding: 6px 0; }
+.lx-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.lx-chip { display: inline-flex; align-items: baseline; gap: 4px; min-height: 36px; padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 10px; color: var(--ink); background: var(--surface); font: 16px/1.4 var(--font-read); }
+.lx-chip small { font: 11.5px/1 var(--font-ui); color: var(--fine); font-variant-numeric: tabular-nums; }
+.lx-chip:hover { border-color: var(--accent); text-decoration: none; }
+.lx-chip.is-covered { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.lx-chip.is-stable { background: var(--accent-soft); border-color: var(--accent); }
+.lx-chip.is-due { border-color: var(--seal); }
 
 /* 设置 */
 .lx-field { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; padding: 10px 0; border-top: 1px solid var(--line); }
@@ -2232,6 +2253,7 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
 .lx-field-label { font-weight: 600; min-width: 5em; }
 .lx-field label { display: inline-flex; align-items: baseline; gap: 6px; cursor: pointer; }
 .lx-field label small { color: var(--fine); font-size: 12.5px; }
+.lx-field-note { color: var(--fine); font-size: 12.5px; }
 
 /* 学习范围 */
 .lx-scope-book { border: 0; padding: 0; margin: 14px 0 0; }
@@ -2291,6 +2313,25 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
 .lx-modebar button { border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 4px 14px; min-height: 32px; cursor: pointer; font-size: 13px; }
 .lx-modebar button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
 .lx-done h1 { font: 600 22px/1.4 var(--font-read); margin: 0 0 10px; }
+/* 文言实词：加粗的是要解释的词，后面的框翻开答案后填上意思 */
+.lx-target { color: var(--seal); font-weight: 700; }
+.lx-slot-word { min-width: 2.4em; margin-left: .1em; }
+.lx-trans { margin: 6px 0; font-size: 14px; color: var(--ink-2); }
+.lx-trans summary { cursor: pointer; color: var(--accent); }
+.lx-trans p { margin: 6px 0 0; line-height: 1.8; }
+/* 文化常识：选项按钮 */
+.lx-stem-cs { font-size: 17px; line-height: 1.85; }
+.lx-options { display: grid; gap: 8px; margin: 6px 0 4px; }
+.lx-options-judge { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lx-opt { display: flex; align-items: baseline; gap: 10px; width: 100%; min-height: 46px; padding: 10px 14px; text-align: left; border: 1.5px solid var(--line-2); border-radius: 12px; background: var(--surface); color: var(--ink); font: 15.5px/1.7 var(--font-read); cursor: pointer; }
+.lx-opt b { flex: none; color: var(--accent); font-family: var(--font-ui); }
+.lx-opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-soft); }
+.lx-opt:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+.lx-opt[disabled] { cursor: default; opacity: .7; }
+.lx-opt.is-right { opacity: 1; border-color: var(--accent); background: var(--accent-soft); }
+.lx-opt.is-wrong { opacity: 1; border-color: var(--seal); background: color-mix(in srgb, var(--seal) 10%, var(--surface)); }
+.lx-opt.is-wrong b { color: var(--seal); }
+.lx-src { font-size: 12.5px; color: var(--fine); margin: 6px 0; }
 /* 课文页「练习」里的入口 */
 .lx-start { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 16px; }
 .lx-start small { color: var(--fine); font-size: 13px; }
@@ -2305,6 +2346,7 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
   .lx-lesson .lx-btn { padding: 6px 10px; }
   .lx-lib-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lx-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lx-track .lx-btn { width: 100%; }
   .lx-stem { font-size: 17px; }
   .lx-scope-grid { grid-template-columns: minmax(0, 1fr); }
 }

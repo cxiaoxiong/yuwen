@@ -1,4 +1,4 @@
-// 学习中心核心逻辑（无 DOM、无存储）：判分比对、Leitner 调度、复习状态、出题队列、进度校验。
+// 学习中心核心逻辑（无 DOM、无存储）：判分比对、Leitner 调度、复习状态、出题队列、进度校验。三类题（默写、文言实词、文化常识）共用一套调度。
 // 浏览器里挂到 window.LearnCore，给 learn.js 用；test/learn/selftest.mjs 在 Node 的 vm 里加载它做测试。
 (function (root) {
   'use strict';
@@ -130,7 +130,7 @@
     return r;
   }
 
-  /** 一句的复习状态：new 没练过、due 到期该复习、learning 在记、stable 稳定（4 号盒以上、没到期、至少两天无提示答对） */
+  /** 一句（一题）的复习状态：new 没练过、due 到期该复习、learning 在记、stable 稳定（4 号盒以上、没到期、至少两天无提示答对） */
   function status(rec, today) {
     if (!rec) return 'new';
     if (rec.d <= today) return 'due';
@@ -154,29 +154,35 @@
   // ───────── 出题 ─────────
   const byDue = (items) => (x, y) => items[x].d.localeCompare(items[y].d) || items[x].b - items[y].b;
 
+  // 三类题（同一类内部混排，不同类不混在一组里）：mx 默写、sc 文言实词语境、cs 文化常识。
+  // 每类当天的新题分开计数，记在 days[日期] 的 w / s / c 上（w 是第一期就有的默写新句数）。
+  const TRACKS = ['mx', 'sc', 'cs'];
+  const NEW_KEY = { mx: 'w', sc: 's', cs: 'c' };
+
   /**
    * 今日复习：范围内到期的句子优先（最多 size 句），再补新句（受当天新句上限约束）。
-   * bank：题库 items 数组（按课文顺序）；state：进度；scope：课文 id 集合（null = 全部）。
+   * bank：一类题的 items 数组（按出题顺序）；state：进度；scope：课文 id 集合（null = 全部）；newKey：当天新题数记在哪个字段。
    * 返回 { ids, due, fresh }。
    */
-  function todayQueue(bank, state, scope, today, size = 10) {
+  function todayQueue(bank, state, scope, today, size = 10, newKey = 'w') {
     const inScope = bank.filter((it) => !scope || scope.has(it.l));
     const due = inScope.filter((it) => state.items[it.id] && state.items[it.id].d <= today).map((it) => it.id).sort(byDue(state.items));
-    const newLeft = Math.max(0, (state.prefs.goal || 10) - ((state.days[today] && state.days[today].w) || 0));
+    const newLeft = Math.max(0, (state.prefs.goal || 10) - ((state.days[today] && state.days[today][newKey]) || 0));
     const pickDue = due.slice(0, size);
     const fresh = inScope.filter((it) => !state.items[it.id]).slice(0, Math.min(newLeft, size - pickDue.length)).map((it) => it.id);
     return { ids: [...pickDue, ...fresh], due: due.length, fresh: fresh.length, newLeft };
   }
 
-  /** 练一篇：到期的、新的、其余（按到期日）依次排列，全部句子都练 */
-  function lessonQueue(bank, state, lessonId, today) {
-    const ids = bank.filter((it) => it.l === lessonId).map((it) => it.id);
+  /** 练一组（一篇课文、一个实词、一个常识专题）：到期的、新的、其余（按到期日）依次排列，全部都练。inGroup(item) 判断是否属于这一组 */
+  function groupQueue(bank, state, inGroup, today) {
+    const ids = bank.filter(inGroup).map((it) => it.id);
     const rec = (id) => state.items[id];
     const due = ids.filter((id) => rec(id) && rec(id).d <= today).sort(byDue(state.items));
     const fresh = ids.filter((id) => !rec(id));
     const rest = ids.filter((id) => rec(id) && rec(id).d > today).sort(byDue(state.items));
     return [...due, ...fresh, ...rest];
   }
+  const lessonQueue = (bank, state, lessonId, today) => groupQueue(bank, state, (it) => it.l === lessonId, today);
 
   /** 错题：错过、还在 1–2 号盒的句子（不限范围），按到期日 */
   function wrongIds(bank, state) {
@@ -200,11 +206,11 @@
   const MODES = ['paper', 'input'];
   const emptyState = () => ({ v: 1, items: {}, days: {}, prefs: { goal: 10, mode: 'paper' }, scope: null, backupAt: null, remindAt: null, flags: [] });
 
-  /** 记一次作答到当天的统计：n 作答句数，w 当天第一次练的新句数 */
-  function logDay(state, today, isNew) {
+  /** 记一次作答到当天的统计：n 作答题数（三类合计），w / s / c 当天第一次练的默写新句、实词新题、常识新题数 */
+  function logDay(state, today, isNew, newKey = 'w') {
     const d = state.days[today] || (state.days[today] = { n: 0, w: 0 });
     d.n++;
-    if (isNew) d.w++;
+    if (isNew) d[newKey] = (d[newKey] || 0) + 1;
     const keys = Object.keys(state.days).sort();
     for (const k of keys.slice(0, Math.max(0, keys.length - 400))) delete state.days[k];
   }
@@ -234,8 +240,10 @@
     }
     const days = Object.keys(s.days);
     if (days.length > 4000) return bad('每日记录太多');
-    for (const k of days) if (!isDay(k) || !isObj(s.days[k]) || !isInt(s.days[k].n, 0, 100000) || !isInt(s.days[k].w, 0, 100000)) return bad(`每日记录不对：${k.slice(0, 20)}`);
+    const optInt = (x) => x === undefined || isInt(x, 0, 100000);
+    for (const k of days) if (!isDay(k) || !isObj(s.days[k]) || !isInt(s.days[k].n, 0, 100000) || !isInt(s.days[k].w, 0, 100000) || !optInt(s.days[k].s) || !optInt(s.days[k].c)) return bad(`每日记录不对：${k.slice(0, 20)}`);
     if (!GOALS.includes(s.prefs.goal) || !MODES.includes(s.prefs.mode)) return bad('设置不对');
+    if (s.prefs.tracks !== undefined && (!Array.isArray(s.prefs.tracks) || s.prefs.tracks.length > TRACKS.length || s.prefs.tracks.some((t) => !TRACKS.includes(t)))) return bad('设置里的学习内容不对');
     if (s.scope !== null && (!Array.isArray(s.scope) || s.scope.length > 1000 || s.scope.some((x) => typeof x !== 'string' || x.length > 60))) return bad('学习范围不对');
     if (!isStamp(s.backupAt) || !(s.remindAt === null || isDay(s.remindAt))) return bad('备份时间不对');
     if (!Array.isArray(s.flags) || s.flags.length > 500 || s.flags.some((f) => !isObj(f) || typeof f.id !== 'string' || f.id.length > 80 || !isDay(f.at) || typeof f.input !== 'string' || f.input.length > 400)) return bad('复核记录不对');
@@ -265,5 +273,5 @@
     return { ...r, exportedAt: isStamp(obj.exportedAt) ? obj.exportedAt : null };
   }
 
-  root.LearnCore = { dayStr, addDays, daysBetween, weekOf, norm, diff, gradeInput, BOXES, GRADES, apply, status, summarize, todayQueue, lessonQueue, wrongIds, pickCue, emptyState, logDay, validateState, exportText, parseImport, GOALS, MODES };
+  root.LearnCore = { dayStr, addDays, daysBetween, weekOf, norm, diff, gradeInput, BOXES, GRADES, apply, status, summarize, todayQueue, groupQueue, lessonQueue, wrongIds, TRACKS, NEW_KEY, pickCue, emptyState, logDay, validateState, exportText, parseImport, GOALS, MODES };
 })(typeof window !== 'undefined' ? window : globalThis);
