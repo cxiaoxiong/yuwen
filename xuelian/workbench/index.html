@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学历案工作台 · 北冥有鱼</title>
+<meta name="description" content="学历案工作台：粘贴课文或知识点，AI 分段生成学历案，逐项修改，导出 Word。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="application-name" content="北冥有鱼">
+<meta property="og:site_name" content="北冥有鱼">
+<meta property="og:title" content="学历案工作台 · 北冥有鱼">
+<meta property="og:description" content="学历案工作台：粘贴课文或知识点，AI 分段生成学历案，逐项修改，导出 Word。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2218%22%20fill%3D%22%2387536c%22%2F%3E%3Cpath%20d%3D%22M32%2023C26%2018%2019%2017%2010%2018v27c9-1%2016%200%2022%205%206-5%2013-6%2022-5V18c-9-1-16%200-22%205Zm0%200v27%22%20fill%3D%22none%22%20stroke%3D%22%23fff7f2%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M32%206c1.8%204.8%203.2%206.2%208%208-4.8%201.8-6.2%203.2-8%208-1.8-4.8-3.2-6.2-8-8%204.8-1.8%206.2-3.2%208-8Z%22%20fill%3D%22%23ffd8c3%22%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="/yuwen/assets/style.css?v=mvggajdc">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=['light','soft','dark'].includes(t)?t:'dark';var s=localStorage.getItem('readingScale');if(s)document.documentElement.style.setProperty('--reading-scale',s)}catch(e){document.documentElement.dataset.theme='dark'}document.documentElement.classList.add('js')</script>
+</head>
+<body class="page-xuelian">
+<a class="skip-link" href="#main">跳到正文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/yuwen/" aria-label="北冥有鱼 首页">
+      <span class="seal" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 17c-4-4-9-5-17-4v22c8-1 13 0 17 4 4-4 9-5 17-4V13c-8-1-13 0-17 4Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><path d="M24 17v22M16 18c2 0 4 .5 5 1.5M32 18c-2 0-4 .5-5 1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M24 4c1.4 3.5 2.5 4.6 6 6-3.5 1.4-4.6 2.5-6 6-1.4-3.5-2.5-4.6-6-6 3.5-1.4 4.6-2.5 6-6Z" fill="currentColor"/></svg></span>
+      <span class="brand-text"><b>北冥有鱼</b><small>高中语文备课室</small></span>
+    </a>
+    <button class="icon-btn nav-toggle" type="button" data-site-nav-toggle aria-label="打开学习导航" aria-controls="site-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path class="i-menu" d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="i-close" d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    <nav class="site-nav" id="site-nav" aria-label="主导航">
+      <a class="nav-primary nav-home" href="/yuwen/">首页</a>
+      <div class="nav-group">
+      <a class="nav-primary" href="/yuwen/lessons/overview/">课文资源</a>
+      <details class="nav-books" data-nav-menu><summary aria-label="切换课文资源菜单"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></summary>
+      <div class="nav-menu"><a href="/yuwen/lessons/overview/" class="nav-hub">课文学习中心</a><a href="/yuwen/lessons/">必修上册</a><a href="/yuwen/lessons/bxx/">必修下册</a><a href="/yuwen/lessons/xbs/">选择性必修上册</a><a href="/yuwen/lessons/xbz/">选择性必修中册</a><a href="/yuwen/lessons/xbx/">选择性必修下册</a></div></details>
+    </div><div class="nav-group">
+      <a class="nav-primary" href="/yuwen/classics/">古诗文</a>
+      <details class="nav-books" data-nav-menu><summary aria-label="切换古诗文菜单"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></summary>
+      <div class="nav-menu"><a href="/yuwen/classics/" class="nav-hub">古诗文学习中心</a><a href="/yuwen/classics/#textbook">教材古诗文</a><a href="/yuwen/wenyan/">文言实词 · 虚词</a><a href="/yuwen/wenyan/knowledge/">古代文化常识</a><a href="/yuwen/classics/gaokao/">高考文言文真题</a></div></details>
+    </div><div class="nav-group">
+      <a class="nav-primary" href="/yuwen/gaokao/">高考冲刺</a>
+      <details class="nav-books" data-nav-menu><summary aria-label="切换高考冲刺菜单"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></summary>
+      <div class="nav-menu"><a href="/yuwen/gaokao/" class="nav-hub">高考冲刺总览</a><a href="/yuwen/essays/">高考作文</a><a href="/yuwen/revision/">一轮复习</a></div></details>
+    </div><div class="nav-group is-current">
+      <a class="nav-primary" href="/yuwen/xuelian/">学历案</a>
+      <details class="nav-books" data-nav-menu><summary aria-label="切换学历案菜单"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></summary>
+      <div class="nav-menu"><a href="/yuwen/xuelian/" class="nav-hub">学历案总览</a><a href="/yuwen/xuelian/learn/">学习路径</a><a href="/yuwen/xuelian/examples/">范例</a><a href="/yuwen/xuelian/workbench/" aria-current="page">学历案工作台</a></div></details>
+    </div>
+    </nav>
+    <form class="header-search" action="/yuwen/search/" role="search">
+      <input type="search" name="q" placeholder="搜索全站" aria-label="搜索全站" autocomplete="off">
+      <kbd aria-hidden="true">/</kbd>
+    </form>
+    <a class="icon-btn nav-search" href="/yuwen/search/" aria-label="搜索全站" title="搜索全站"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+    <details class="theme-picker" data-theme-picker>
+      <summary class="icon-btn theme-toggle" aria-label="选择界面主题" title="选择界面主题"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 3a9 9 0 0 0 0 18c2 0 2.5-2.1 1.2-3.2-.8-.7-1-2.2.3-2.6.7-.2 1.6.1 2.3.1 3.2 0 5.2-2.6 5.2-5.3A9 9 0 0 0 12 3Z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="7.5" cy="11" r="1" fill="currentColor"/><circle cx="10.5" cy="7.7" r="1" fill="currentColor"/><circle cx="16" cy="8.3" r="1" fill="currentColor"/></svg></summary>
+      <div class="theme-menu" role="group" aria-label="界面主题">
+        <p>界面主题</p>
+        <button type="button" data-theme-option="light" aria-pressed="false"><i class="theme-swatch theme-swatch-light" aria-hidden="true"></i><span>浅色<small>清爽明亮</small></span><b aria-hidden="true">✓</b></button>
+        <button type="button" data-theme-option="soft" aria-pressed="false"><i class="theme-swatch theme-swatch-soft" aria-hidden="true"></i><span>柔雾<small>柔和舒心</small></span><b aria-hidden="true">✓</b></button>
+        <button type="button" data-theme-option="dark" aria-pressed="false"><i class="theme-swatch theme-swatch-dark" aria-hidden="true"></i><span>夜间<small>安静沉浸</small></span><b aria-hidden="true">✓</b></button>
+      </div>
+    </details>
+  </div>
+</header>
+<main id="main">
+<div class="wrap xl-shell xl-shell-wide">
+  <details class="xl-nav" open>
+  <summary class="xl-nav-toggle"><span>学历案导航</span></summary>
+  <nav class="xl-nav-body" aria-label="学历案导航">
+    <a href="/yuwen/xuelian/" class="xl-nav-home">学历案总览</a>
+    <p class="xl-nav-h"><a href="/yuwen/xuelian/learn/">学习路径</a></p>
+    <ol class="xl-nav-list"><li><a href="/yuwen/xuelian/learn/what/"><b>1</b><span>学历案是什么</span></a></li><li><a href="/yuwen/xuelian/learn/vs-jiaoan/"><b>2</b><span>学历案与教案、导学案的区别</span></a></li><li><a href="/yuwen/xuelian/learn/elements/"><b>3</b><span>要素总览：一份学历案由什么组成</span></a></li><li><a href="/yuwen/xuelian/learn/goals/"><b>4</b><span>学习目标：写得看得见、测得了</span></a></li><li><a href="/yuwen/xuelian/learn/tasks/"><b>5</b><span>评价任务：拿什么证明学会了</span></a></li><li><a href="/yuwen/xuelian/learn/process/"><b>6</b><span>学习过程：把“教的流程”改成“学的路线”</span></a></li><li><a href="/yuwen/xuelian/learn/assess/"><b>7</b><span>作业与检测：当堂闭环与分层作业</span></a></li><li><a href="/yuwen/xuelian/learn/reflection/"><b>8</b><span>学后反思：让学生拿出证据</span></a></li><li><a href="/yuwen/xuelian/learn/backward/"><b>9</b><span>逆向设计全流程：从一篇课文到一份学历案</span></a></li><li><a href="/yuwen/xuelian/learn/reading/"><b>10</b><span>范例精读：用自查清单读懂一份好学历案</span></a></li></ol>
+    <p class="xl-nav-h"><a href="/yuwen/xuelian/examples/">范例</a></p>
+    <ul class="xl-nav-list"><li><a href="/yuwen/xuelian/examples/#yuwen"><span>语文</span><small>5</small></a></li><li><a href="/yuwen/xuelian/examples/#shuxue"><span>数学</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#yingyu"><span>英语</span><small>3</small></a></li><li><a href="/yuwen/xuelian/examples/#wuli"><span>物理</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#huaxue"><span>化学</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#shengwu"><span>生物</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#lishi"><span>历史</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#dili"><span>地理</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#zhengzhi"><span>政治</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#yinyue"><span>音乐</span><small>2</small></a></li><li><a href="/yuwen/xuelian/examples/#tiyu"><span>体育</span><small>2</small></a></li></ul>
+    <p class="xl-nav-h"><a href="/yuwen/xuelian/workbench/" aria-current="page" class="xl-nav-tool">学历案工作台</a></p>
+  </nav>
+</details><script>if(matchMedia('(max-width: 999px)').matches)document.currentScript.previousElementSibling.open=false</script>
+  <div class="xl-main"><nav class="crumbs" aria-label="位置"><a href="/yuwen/xuelian/">学历案</a><span>/</span>工作台</nav>
+<header class="page-head">
+  <h1>学历案工作台</h1>
+  <p class="lead">选学科、粘贴材料、写下要求，AI 按逆向设计分段写出学历案；你逐项修改，右侧即时检查，最后导出 Word。内容只保存在这台电脑的浏览器里，换电脑前请导出备份。</p>
+</header>
+<noscript><p class="callout warn">工作台需要开启浏览器的 JavaScript。</p></noscript>
+<div class="xl-wb" data-xl-workbench data-ai-skip>
+  <div class="xl-wb-main">
+    <section class="xl-card xl-docbar" aria-label="我的学历案">
+      <label for="xl-doc-pick">我的学历案</label>
+      <select id="xl-doc-pick" class="xl-input" data-doc-pick></select>
+      <div class="xl-actions">
+        <button type="button" class="xl-btn xl-btn-ghost" data-act="new">新建</button>
+        <button type="button" class="xl-btn xl-btn-ghost" data-act="dup">复制</button>
+        <button type="button" class="xl-btn xl-btn-ghost" data-act="del">删除</button>
+        <button type="button" class="xl-btn xl-btn-ghost" data-act="backup">导出备份</button>
+        <label class="xl-btn xl-btn-ghost xl-file">导入备份<input type="file" accept=".json,application/json" data-act="import"></label>
+      </div>
+      <p class="xl-status" data-save-status aria-live="polite"></p>
+    </section>
+
+    <section class="xl-card" id="step-1">
+      <h2 class="xl-step"><span>1</span>课题与材料</h2>
+      <div class="xl-grid">
+        <div class="xl-field xl-wide"><label for="xl-title">课题</label><input id="xl-title" class="xl-input" data-meta="title" maxlength="80" placeholder="如：赤壁赋（一轮复习）"></div>
+        <div class="xl-field"><label for="xl-subject">学科</label><select id="xl-subject" class="xl-input" data-meta="subject"><option selected>语文</option><option>数学</option><option>英语</option><option>物理</option><option>化学</option><option>生物</option><option>历史</option><option>地理</option><option>政治</option><option>信息技术</option><option>通用技术</option><option>音乐</option><option>美术</option><option>体育</option></select></div>
+        <div class="xl-field"><label for="xl-stage">学段</label><select id="xl-stage" class="xl-input" data-meta="stage"><option selected>高中</option><option>初中</option></select></div>
+        <div class="xl-field"><label for="xl-grade">年级</label><input id="xl-grade" class="xl-input" data-meta="grade" maxlength="20" placeholder="如：高一"></div>
+        <div class="xl-field xl-wide"><label for="xl-textbook">教材与章节</label><input id="xl-textbook" class="xl-input" data-meta="textbook" maxlength="60" placeholder="如：统编版必修上册第16课"></div>
+        <div class="xl-field"><label for="xl-lessonType">课型</label><input id="xl-lessonType" class="xl-input" data-meta="lessonType" maxlength="20" list="xl-types" placeholder="新授课"><datalist id="xl-types"><option value="新授课"><option value="复习课"><option value="习题课"><option value="实验课"><option value="写作课"><option value="阅读课"><option value="讲评课"><option value="活动课"></datalist></div>
+        <div class="xl-field"><label for="xl-periods">课时数</label><input id="xl-periods" class="xl-input" data-meta="periods" type="number" min="1" max="20" value="1"></div>
+        <div class="xl-field"><label for="xl-minutes">每课时分钟</label><input id="xl-minutes" class="xl-input" data-meta="minutes" type="number" min="10" max="120" value="40"></div>
+        <div class="xl-field"><label for="xl-designer">设计者</label><input id="xl-designer" class="xl-input" data-meta="designer" maxlength="30" placeholder="可留空" title="只写进导出的 Word"></div>
+      </div>
+      <div class="xl-field"><label for="xl-source">原文与材料 <small data-count="source"></small></label><textarea id="xl-source" class="xl-input" rows="8" data-field="source" placeholder="粘贴课文、知识点、考点、教材片段或你的旧教案……"></textarea></div>
+      <div class="xl-field"><label for="xl-request">我的要求 <small data-count="request"></small></label><textarea id="xl-request" class="xl-input" rows="3" data-field="request" placeholder="如：学生基础中等；重点放在情感变化的证据；想用“先猜后证”开课；需要一道当堂写作题"></textarea></div>
+    </section>
+
+    <section class="xl-card" id="step-2" data-ai>
+      <h2 class="xl-step"><span>2</span>AI 一键成稿</h2>
+      <p class="xl-hint">按逆向设计分三段写：先写主题、课标、目标、评价任务和学法建议，再写学习过程，最后写作业与检测、学后反思和参考答案。每段都参照前面已经写好的部分。</p>
+      <div class="xl-actions">
+        <label class="xl-check"><input type="checkbox" data-gen-design> 同时生成教学设计（教师用）</label>
+      </div>
+      <div class="xl-code" data-code hidden>
+        <label for="xl-code">访问码</label><input id="xl-code" class="xl-input" data-code-input maxlength="64" autocomplete="off">
+      </div>
+      <div class="xl-actions">
+        <button type="button" class="xl-btn" data-generate>一键成稿</button>
+        <button type="button" class="xl-btn xl-btn-ghost" data-stop hidden>停止</button>
+        <button type="button" class="xl-btn xl-btn-ghost" data-undo hidden>撤销上一次 AI 修改</button>
+        <span class="xl-status" data-gen-status aria-live="polite"></span>
+      </div>
+      <ol class="xl-progress" data-progress hidden></ol>
+      <pre class="xl-stream" data-stream hidden></pre>
+      <p class="xl-hint xl-ai-off" data-ai-off hidden></p>
+    </section>
+
+    <section class="xl-card" id="step-3">
+      <h2 class="xl-step"><span>3</span>逐项修改</h2>
+      <p class="xl-hint">每个要素都可以直接改，也可以用一句话让 AI 改（相关要素会一起改好）。格式说明：目标每条以 G1、G2 开头；评价任务用表格并注明对应目标；活动标题写成“#### 活动一　名称〔T1｜8分钟〕”；公式写在 $…$ 里。<a href="#xl-format" data-toggle-format>查看完整格式</a></p>
+      <details class="xl-format" id="xl-format"><summary>书写格式</summary><div class="prose"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>写什么</th>
+<th>怎么写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>小标题</td>
+<td>单独一行，以「### 」开头，如「### 一、课前准备（约15分钟）」</td>
+</tr>
+<tr>
+<td>活动标题</td>
+<td>以「#### 」开头，末尾注明对应任务和用时：「#### 活动二　错题医院〔T2｜10分钟〕」</td>
+</tr>
+<tr>
+<td>学习目标</td>
+<td>每条一行：「G1 能……（L2）」</td>
+</tr>
+<tr>
+<td>评价任务</td>
+<td>表格：「| 编码 | 评价任务 | 对应目标 | 完成标准 |」，下一行「|---|---|---|---|」</td>
+</tr>
+<tr>
+<td>填空横线</td>
+<td>连续下划线「<span class="blank"></span>」</td>
+</tr>
+<tr>
+<td>提示语、阅读材料</td>
+<td>行首写「&gt; 」，Word 里显示为楷体</td>
+</tr>
+<tr>
+<td>加粗</td>
+<td>「<strong>文字</strong>」</td>
+</tr>
+<tr>
+<td>公式</td>
+<td>行内「$x^2+1$」，单独一行「$$\frac{a}{b}$$」，化学式「$\ce{H2SO4}$」</td>
+</tr>
+<tr>
+<td>插图位置</td>
+<td>「〔此处插图：电路图〕」，导出后自己补图</td>
+</tr>
+</tbody>
+</table></div>
+</div></details>
+      <details class="xl-sec-edit" data-key="topic" id="sec-topic">
+  <summary><span class="xl-sec-label">【学习主题】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="学习主题" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="standards" id="sec-standards">
+  <summary><span class="xl-sec-label">【课标与学业质量要求】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="课标与学业质量要求" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="goals" id="sec-goals">
+  <summary><span class="xl-sec-label">【学习目标】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="学习目标" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="tasks" id="sec-tasks">
+  <summary><span class="xl-sec-label">【评价任务】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="评价任务" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="methods" id="sec-methods">
+  <summary><span class="xl-sec-label">【学法建议】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="学法建议" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="process" id="sec-process">
+  <summary><span class="xl-sec-label">【学习过程】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="学习过程" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="assess" id="sec-assess">
+  <summary><span class="xl-sec-label">【作业与检测】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="作业与检测" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="reflection" id="sec-reflection">
+  <summary><span class="xl-sec-label">【学后反思】</span><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="学后反思" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="answers" id="sec-answers">
+  <summary><span class="xl-sec-label">【参考答案】</span><small>教师版</small><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="参考答案" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+<details class="xl-sec-edit" data-key="design" id="sec-design">
+  <summary><span class="xl-sec-label">【教学设计】</span><small>教师版</small><span class="xl-sec-state" data-state></span></summary>
+  <div class="xl-sec-body">
+    <div class="xl-sec-tabs" role="group" aria-label="编辑或预览"><button type="button" data-view="edit" aria-pressed="true">编辑</button><button type="button" data-view="preview" aria-pressed="false">预览</button></div>
+    <textarea class="xl-input xl-mono" rows="10" data-sec-input aria-label="教学设计" spellcheck="false"></textarea>
+    <div class="xl-sec-preview xl-doc" data-sec-preview hidden></div>
+    <div class="xl-revise" data-ai>
+      <input type="text" class="xl-input" maxlength="1000" data-revise-input placeholder="用一句话告诉 AI 怎么改，如：把 G2 降一档难度" aria-label="修改要求">
+      <button type="button" class="xl-btn xl-btn-ghost" data-revise>让 AI 改</button>
+    </div>
+  </div>
+</details>
+      <div class="xl-revise xl-revise-all" data-ai>
+        <input type="text" class="xl-input" maxlength="1000" data-revise-all-input placeholder="对整份学历案提要求，如：改成 2 课时，每课时 45 分钟" aria-label="整份修改要求">
+        <button type="button" class="xl-btn xl-btn-ghost" data-revise-all>让 AI 改整份</button>
+      </div>
+    </section>
+
+    <section class="xl-card" id="step-4">
+      <h2 class="xl-step"><span>4</span>预览与导出</h2>
+      <div class="xl-export" data-xl-export>
+  <div class="xl-export-opts" role="group" aria-label="导出选项">
+    <label><input type="radio" name="xl-ver-wb" value="student" checked> 学生版</label>
+    <label><input type="radio" name="xl-ver-wb" value="teacher"> 教师版（含答案与教学设计）</label>
+    <label><input type="checkbox" data-opt="color"> 彩色标签</label>
+  </div>
+  <div class="xl-actions">
+    <button type="button" class="xl-btn" data-xl-docx>导出 Word</button><button type="button" class="xl-btn xl-btn-ghost" data-preview>预览全文</button><button type="button" class="xl-btn xl-btn-ghost" data-md>导出 Markdown</button>
+    
+    <span class="xl-status" data-xl-status aria-live="polite"></span>
+  </div>
+</div>
+      <label class="xl-check"><input type="checkbox" data-opt="info" checked> 标题下加“班级、学号、姓名”一行</label>
+      <label class="xl-check"><input type="checkbox" data-opt="notes" checked> 附笔记区</label>
+    </section>
+  </div>
+
+  <aside class="xl-wb-side" aria-label="检查">
+    <section class="xl-card xl-checks">
+      <h2>本地检查 <small data-check-sum></small></h2>
+      <ul class="xl-issues" data-checks></ul>
+    </section>
+    <section class="xl-card xl-audit" data-ai>
+      <h2>AI 体检</h2>
+      <p class="xl-hint">从内容上检查：目标能否观测、任务能否检验目标、活动能否支撑任务、有没有学科错误。</p>
+      <div class="xl-actions"><button type="button" class="xl-btn xl-btn-ghost" data-audit>开始体检</button><span class="xl-status" data-audit-status aria-live="polite"></span></div>
+      <ul class="xl-issues" data-audit-list></ul>
+      <p class="xl-audit-sum" data-audit-sum hidden></p>
+    </section>
+    <p class="xl-hint">AI 生成的内容请像审同事的初稿一样逐条审读，尤其是原文引用、计算和答案。<a href="/yuwen/xuelian/learn/">还没学过学历案？先看学习路径 →</a></p>
+  </aside>
+</div>
+<dialog class="xl-dialog" data-preview-dialog aria-label="预览全文">
+  <form method="dialog" class="xl-dialog-bar"><b>预览</b><span class="xl-dialog-opts"><label><input type="checkbox" data-preview-teacher> 教师版</label></span><button class="xl-btn xl-btn-ghost">关闭</button></form>
+  <article class="xl-doc" data-preview-body></article>
+</dialog></div>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-brand"><span class="seal" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 17c-4-4-9-5-17-4v22c8-1 13 0 17 4 4-4 9-5 17-4V13c-8-1-13 0-17 4Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><path d="M24 17v22M16 18c2 0 4 .5 5 1.5M32 18c-2 0-4 .5-5 1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M24 4c1.4 3.5 2.5 4.6 6 6-3.5 1.4-4.6 2.5-6 6-1.4-3.5-2.5-4.6-6-6 3.5-1.4 4.6-2.5 6-6Z" fill="currentColor"/></svg></span>北冥有鱼</p>
+    <p class="footer-intro">面向高中语文学习与教学，整理课文、古诗文、高考作文与真题资源。希望把零散的知识、方法和练习，连接成一条真正可以学习、训练和复习的路径。</p>
+    <nav class="footer-nav" aria-label="板块导航">
+      <a href="/yuwen/">首页</a><a href="/yuwen/lessons/overview/">课文资源</a><a href="/yuwen/classics/">古诗文</a><a href="/yuwen/gaokao/">高考冲刺</a><a href="/yuwen/xuelian/">学历案</a><a href="/yuwen/search/">搜索</a>
+    </nav>
+  </div>
+</footer>
+<script src="/yuwen/assets/app.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/vendor/temml/temml.min.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/vendor/temml/mhchem.min.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/xuelian-doc.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/xuelian-omml.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/xuelian-docx.js?v=mvggajdc" defer></script>
+<script src="/yuwen/assets/xuelian.js?v=mvggajdc" defer></script>
+</body>
+</html>
