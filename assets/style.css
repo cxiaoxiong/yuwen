@@ -2122,6 +2122,203 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
 .xl-dialog-opts { margin-right: auto; font-size: 14px; }
 .xl-dialog > .xl-doc { padding: 10px 28px 28px; }
 
+/* 学习路径：左栏的进度、阶段、状态与本节目录 */
+.xl-nav-prog { margin: 4px 10px 6px 13px; }
+.xl-nav-prog small { display: block; margin-top: 4px; font-size: 12px; color: var(--fine); }
+.xl-bar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+.xl-bar > i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--accent); transition: width .3s ease; }
+.xl-nav-sym { display: flex; align-items: baseline; gap: 6px; width: calc(100% - 13px); margin: 6px 0 4px 13px; padding: 5px 10px; border: 1px dashed var(--line-2); border-radius: 8px; background: none; color: var(--ink-2); font: 13px/1.5 var(--font-ui); cursor: pointer; text-align: left; }
+.xl-nav-sym span { margin-left: auto; color: var(--indigo); font-weight: 600; letter-spacing: .06em; }
+.xl-nav-sym:hover { border-color: var(--accent); color: var(--accent); }
+.xl-nav-sym[hidden] { display: none; }
+.xl-nav-ph { display: flex; align-items: baseline; gap: 6px; margin: 12px 0 2px 13px; font-size: 12.5px; font-weight: 600; letter-spacing: .04em; color: var(--ink); }
+.xl-nav-ph small { margin-left: auto; padding-right: 10px; font-weight: 400; color: var(--muted); font-size: 12px; }
+.xl-nav-lessons a { align-items: center; }
+.xl-st { flex: none; width: 14px; height: 14px; border: 1.5px solid var(--line-2); border-radius: 50%; display: grid; place-items: center; font: normal 700 9px/1 var(--font-ui); color: var(--surface); }
+[data-xl-state="doing"] > a .xl-st { border-color: var(--accent); background: conic-gradient(var(--accent) 0 50%, transparent 50% 100%); }
+[data-xl-state="done"] > a .xl-st { border-color: var(--accent); background: var(--accent); }
+[data-xl-state="done"] > a .xl-st::before { content: "✓"; }
+.xl-nav-lessons > li > a > span { flex: 1; min-width: 0; }
+.xl-toc { list-style: none; margin: 2px 0 6px 31px; padding: 0 0 0 8px; border-left: 1px solid var(--line); font-size: 12.5px; }
+.xl-toc ol { list-style: none; margin: 0; padding: 0 0 0 10px; }
+.xl-nav-body .xl-toc a { padding: 2px 8px; font-size: 12.5px; color: var(--muted); border-left: 0; border-radius: 6px; }
+.xl-nav-body .xl-toc ol a { font-size: 12px; }
+.xl-nav-body .xl-toc a.is-on { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.xl-toc small { margin-left: auto; font-size: 11.5px; }
+.xl-nav-ex { margin: 6px 0 0; }
+.xl-nav-ex > summary { display: flex; align-items: baseline; gap: 6px; padding: 4px 10px 4px 13px; cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; }
+.xl-nav-ex > summary::-webkit-details-marker { display: none; }
+.xl-nav-ex > summary::after { content: "＋"; margin-left: auto; font-weight: 400; color: var(--muted); }
+.xl-nav-ex[open] > summary::after { content: "－"; }
+.xl-nav-ex > summary small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.xl-nav-all { margin: 0; }
+.xl-nav-all a { padding-left: 16px; font-size: 13px; }
+.xl-nav-body a.xl-nav-tool { margin-top: 12px; justify-content: center; border: 1px solid color-mix(in srgb, var(--indigo) 45%, transparent); border-radius: 10px; background: var(--indigo-soft); font-weight: 600; }
+.xl-nav-toggle small { margin-left: 10px; font-weight: 400; font-size: 12.5px; color: var(--muted); }
+
+/* 学习路径：进度面板、阶段、各节卡片的状态 */
+.xl-dash { margin: 4px 0 20px; padding: 14px 18px; border: 1px solid var(--panel-border); border-radius: var(--radius); background: var(--panel); }
+.xl-dash[hidden] { display: none; }
+.xl-dash-nums { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+.xl-dash-nums b { font: 600 20px/1.2 var(--font-read); color: var(--accent); }
+.xl-dash-bar { display: flex; gap: 6px; }
+.xl-dash-seg { min-width: 0; }
+.xl-dash-seg .xl-bar { height: 10px; }
+.xl-dash-seg small { display: block; margin-top: 4px; font-size: 12px; color: var(--fine); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xl-dash-go { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0 0; }
+.xl-dash-go .xl-btn { white-space: normal; text-align: left; }
+.xl-dash-go .xl-hint { margin: 0; }
+.xl-dash.is-compact { margin-top: 0; }
+.xl-start-card { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 2px 12px; align-items: start; margin: 0 0 8px; padding: 14px 16px; border: 1px dashed color-mix(in srgb, var(--indigo) 55%, transparent); border-radius: var(--radius); background: var(--indigo-soft); color: var(--ink); }
+.xl-start-card:hover { text-decoration: none; border-style: solid; }
+.xl-start-card b { display: block; font-family: var(--font-read); }
+.xl-start-card small { display: block; color: var(--ink-2); font-size: 13.5px; line-height: 1.7; }
+.xl-start-card .xl-step-no { grid-row: auto; border-color: var(--indigo); color: var(--indigo); }
+.xl-start-card[data-xl-state="done"] b::after { content: "　✓ 已学完"; font: 600 12px var(--font-ui); color: var(--accent); }
+.xl-phase .block-title small, .block-title small { margin-left: 10px; font: 400 13px var(--font-ui); color: var(--muted); }
+.xl-phase-goal { margin: -4px 0 12px; color: var(--ink-2); font-size: 14.5px; line-height: 1.75; }
+.xl-phase-h { margin: 18px 0 8px; font: 600 15px var(--font-ui); color: var(--seal); letter-spacing: .06em; }
+.xl-card-st { font: normal 600 12px var(--font-ui); color: var(--accent); margin-left: 10px; }
+.xl-lessons [data-xl-state="done"] .xl-step-no { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.xl-lessons [data-xl-state="doing"] .xl-step-no { border-color: var(--accent); color: var(--accent); }
+
+/* 每一节：页头信息、开始之前、完成状态 */
+.xl-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.xl-meta span { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
+.xl-meta-st[data-state="done"] { background: var(--accent-soft) !important; color: var(--accent) !important; font-weight: 600; }
+.xl-meta [hidden] { display: none; }
+.xl-before { margin: 18px 0 8px; padding: 14px 18px 6px; border: 1px solid var(--panel-border); border-left: 4px solid var(--indigo); border-radius: var(--radius); background: var(--panel); }
+.xl-before-h { margin: 0 0 6px; font: 600 15px var(--font-ui); letter-spacing: .1em; color: var(--indigo); }
+.xl-before-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0 28px; }
+.xl-before h3 { margin: 10px 0 6px; font: 600 13.5px var(--font-ui); color: var(--ink); }
+.xl-plan { list-style: none; margin: 0 0 8px; padding: 0; font-size: 13.5px; }
+.xl-plan li { display: flex; gap: 8px; padding: 3px 0; border-bottom: 1px dashed var(--line); }
+.xl-plan li span { margin-left: auto; color: var(--muted); white-space: nowrap; }
+.xl-plan a { color: var(--ink-2); }
+.xl-terms { margin: 0; font-size: 13.5px; line-height: 1.65; }
+.xl-terms dt { font-weight: 600; color: var(--ink); margin-top: 6px; }
+.xl-terms dd { margin: 0; color: var(--ink-2); }
+.xl-sym-k { color: var(--indigo); font-family: var(--font-ui); white-space: nowrap; }
+.xm-chain { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 0; margin: 0; padding: 0; font-size: 13px; }
+.xm-chain li { display: flex; align-items: center; }
+.xm-chain li + li::before { content: "→"; margin: 0 4px; color: var(--muted); }
+.xm-chain a { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); }
+.xm-chain a:hover { text-decoration: none; border-color: var(--accent); }
+.xm-chain li.is-here a { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.xm-chain.is-all li.is-here a { font-weight: 400; }
+.xl-finish { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 28px 0 0; padding: 12px 16px; border-radius: var(--radius); border: 1px solid var(--panel-border); background: var(--surface-2); font-size: 14.5px; }
+.xl-finish[hidden] { display: none; }
+.xl-finish p { margin: 0; flex: 1 1 280px; }
+.xl-finish[data-state="done"] { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+
+/* 符号：正文里的 G1／T2／L3，点按或悬停看说明 */
+abbr.xl-sym { text-decoration: underline dotted color-mix(in srgb, var(--indigo) 60%, transparent); text-underline-offset: 3px; cursor: help; color: inherit; font-family: var(--font-ui); font-size: .94em; }
+abbr.xl-sym:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 3px; }
+.xl-tip { position: absolute; z-index: 60; padding: 6px 10px; border-radius: 8px; background: var(--deep); color: #fff; font: 13px/1.6 var(--font-ui); box-shadow: var(--shadow); pointer-events: none; }
+.xl-tip[hidden] { display: none; }
+.xl-sym-dlg .xl-dialog-bar b { margin-right: auto; }
+.xl-sym-body { padding: 8px 18px 18px; }
+.xl-sym-body h3 { margin: 16px 0 6px; font-size: 15px; }
+.xl-sym-table td small { display: block; color: var(--muted); font-size: 12px; }
+.xl-sym-table td { font-size: 14px; }
+
+/* 练一练：题型标签与选择、排序、归类、行动卡 */
+.xl-q-kind { font: 400 12px/1.6 var(--font-ui); padding: 0 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
+.xl-q-goal { font: 400 12px/1.6 var(--font-ui); color: var(--indigo); }
+.xl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.xl-q:not(.is-live) .xl-live, .xl-q:not(.is-live) .xl-sort-btns { display: none; }
+.xl-opts { margin: 8px 0 4px; padding: 0; border: 0; display: grid; gap: 8px; }
+.xl-opt { display: grid; grid-template-columns: auto 26px minmax(0, 1fr); gap: 0 8px; align-items: start; padding: 9px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); cursor: pointer; line-height: 1.65; font-size: calc(15.5px * var(--reading-scale)); }
+.xl-opt:hover { border-color: var(--accent); }
+.xl-opt input { margin: 5px 0 0; accent-color: var(--accent); }
+.xl-opt-k { font: 600 14px/1.8 var(--font-ui); color: var(--seal); }
+.xl-opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.xl-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+.xl-opt:has(input:disabled) { cursor: default; }
+.xl-why { display: block; margin-top: 4px; font-size: 13.5px; color: var(--ink-2); }
+.xl-opt.is-right { border-color: var(--indigo); background: var(--indigo-soft); box-shadow: inset 4px 0 0 var(--indigo); }
+.xl-opt.is-right .xl-opt-k::after { content: " ✓"; color: var(--indigo); }
+.xl-opt.is-wrong { border-color: var(--seal); background: var(--seal-soft); box-shadow: inset 4px 0 0 var(--seal); }
+.xl-opt.is-wrong .xl-opt-k::after { content: " ✗"; color: var(--seal); }
+.xl-opt:not(.is-right):not(.is-wrong) .xl-why { color: var(--muted); }
+.xl-match > li.is-right::after, .xl-sort > li.is-right .xl-sort-t::after { content: " ✓"; color: var(--indigo); font-weight: 600; }
+.xl-sort > li.is-wrong .xl-sort-t::after { content: " ✗"; color: var(--seal); font-weight: 600; }
+.xl-sort { list-style: none; counter-reset: xs; margin: 8px 0 4px; padding: 0; display: grid; gap: 6px; }
+.xl-sort > li { counter-increment: xs; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); line-height: 1.6; font-size: calc(15px * var(--reading-scale)); }
+.xl-sort > li::before { content: counter(xs); font: 600 14px var(--font-ui); color: var(--seal); text-align: center; }
+.xl-sort-btns { display: flex; gap: 4px; }
+.xl-sort-btns button { width: 36px; height: 36px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--panel); color: var(--ink-2); font-size: 16px; cursor: pointer; }
+.xl-sort-btns button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.xl-sort-btns button:disabled { opacity: .35; cursor: default; }
+.xl-sort > li.is-right { border-color: var(--indigo); background: var(--indigo-soft); box-shadow: inset 4px 0 0 var(--indigo); }
+.xl-sort > li.is-wrong { border-color: var(--seal); background: var(--seal-soft); box-shadow: inset 4px 0 0 var(--seal); }
+.xl-match { list-style: none; margin: 8px 0 4px; padding: 0; display: grid; gap: 8px; }
+.xl-match > li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8em, 13em); gap: 4px 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); line-height: 1.65; font-size: calc(15px * var(--reading-scale)); }
+.xl-match select { width: 100%; }
+.xl-match .xl-why, .xl-match-ans { grid-column: 1 / -1; }
+.xl-match-ans { font-size: 13.5px; font-weight: 600; color: var(--seal); }
+.xl-match > li.is-right { border-color: var(--indigo); background: var(--indigo-soft); box-shadow: inset 4px 0 0 var(--indigo); }
+.xl-match > li.is-wrong { border-color: var(--seal); background: var(--seal-soft); box-shadow: inset 4px 0 0 var(--seal); }
+.xl-act { list-style: none; margin: 8px 0 8px; padding: 0; display: grid; gap: 6px; }
+.xl-act label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; padding: 8px 12px; border: 1px dashed var(--line-2); border-radius: 10px; cursor: pointer; line-height: 1.65; }
+.xl-act input { margin-top: 5px; accent-color: var(--accent); }
+.xl-act label:has(input:checked) { border-style: solid; border-color: var(--accent); background: var(--accent-soft); }
+.xl-q[data-type="action"] { border-style: dashed; border-color: color-mix(in srgb, var(--indigo) 50%, transparent); }
+.xl-q[data-type="action"] .xl-q-kind { background: var(--indigo-soft); color: var(--indigo); }
+.xl-q .xl-actions { margin-top: 10px; }
+.xl-explain-wrap { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+.xl-explain-wrap[hidden] { display: none; }
+.xl-explain-h { margin: 0 0 4px; font: 600 12px/1.6 var(--font-ui); letter-spacing: .12em; color: var(--indigo); }
+.xl-rec { margin: 8px 0 0; padding: 12px 16px; border-radius: var(--radius); background: var(--indigo-soft); font-size: 14.5px; line-height: 1.75; }
+.xl-rec[hidden] { display: none; }
+.xl-rec p { margin: 0 0 6px; }
+.xl-rec ul { margin: 0 0 6px; }
+
+/* 开始之前：学习节奏、核心概念卡 */
+.xl-sub-h { margin: 18px 0 8px; font-size: 16px; }
+.xl-rhythms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.xl-rhythms li { padding: 12px 14px; border: 1px solid var(--panel-border); border-radius: var(--radius); background: var(--panel); font-size: 14px; line-height: 1.7; }
+.xl-rhythms b { display: block; margin-bottom: 2px; font-family: var(--font-read); color: var(--seal); }
+.xl-concepts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.xl-concept { padding: 14px 16px; border: 1px solid var(--panel-border); border-radius: var(--radius); background: var(--panel); font-size: 14.5px; line-height: 1.75; scroll-margin-top: calc(var(--header-h) + 16px); }
+.xl-concept h3 { margin: 0 0 4px; font: 600 16.5px var(--font-read); color: var(--ink); }
+.xl-concept p { margin: 0 0 6px; }
+.xl-concept-not, .xl-concept-ex { color: var(--ink-2); font-size: 14px; }
+.xl-concept-not b, .xl-concept-ex b { display: inline-block; margin-right: 6px; padding: 0 6px; border-radius: 6px; font: 600 12px/1.7 var(--font-ui); }
+.xl-concept-not b { background: var(--seal-soft); color: var(--seal); }
+.xl-concept-ex b { background: var(--gold-soft); color: var(--gold); }
+.xl-concept-go { font-size: 13px; color: var(--muted); margin: 0 !important; }
+
+/* 概念关系图（scripts/lib/xuelian-map.mjs）：宽版横排，窄屏换竖排 */
+.xm { margin: 4px 0 8px; }
+.xm-svg { display: block; width: 100%; height: auto; font-family: var(--font-ui); }
+.xm-tall { display: none; max-width: 400px; margin: 0 auto; }
+.xm-node rect { fill: var(--panel); stroke: var(--line-2); stroke-width: 1.5; transition: stroke .15s; }
+.xm-node:hover rect, .xm-node:focus-visible rect { stroke: var(--accent); stroke-width: 2; }
+.xm-node.is-here rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.5; }
+.xm-t { font-size: 16px; font-weight: 600; fill: var(--ink); }
+.xm-s { font-size: 13px; fill: var(--ink-2); }
+.xm-no { fill: var(--indigo-soft); stroke: var(--indigo); stroke-width: 1; }
+.xm-no-t { font-size: 13px; font-weight: 700; fill: var(--indigo); }
+.xm-here { font-size: 12px; font-weight: 600; fill: var(--accent); }
+.xm-edge { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+.xm-loop { stroke-dasharray: 6 5; stroke: var(--indigo); }
+.xm-head { fill: var(--muted); }
+.xm-lab { font-size: 12.5px; fill: var(--fine); }
+.xm-brace { stroke: var(--indigo); stroke-width: 1.4; fill: none; }
+.xm-brace-t { fill: var(--indigo); font-weight: 600; }
+.xm-cap { margin-top: 10px; font-size: 14px; line-height: 1.75; color: var(--ink-2); }
+.xm-cap p { margin: 0 0 4px; }
+.xm-cap b { color: var(--ink); }
+@media (max-width: 760px) {
+  .xm-wide { display: none; }
+  .xm-tall { display: block; }
+  .xl-before-grid { grid-template-columns: minmax(0, 1fr); }
+  .xl-rhythms, .xl-concepts { grid-template-columns: minmax(0, 1fr); }
+  .xl-match > li { grid-template-columns: minmax(0, 1fr); }
+  .xl-dash-seg small span { display: none; }
+}
+
 @media (max-width: 1199px) {
   .xl-wb { grid-template-columns: minmax(0, 1fr); }
   .xl-wb-side { position: static; max-height: none; overflow: visible; }
@@ -2149,7 +2346,7 @@ math { font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto 
   .xl-pager a.next { grid-column: 1; }
 }
 @media print {
-  .xl-nav, .xl-export, .xl-actions, .xl-jump, .xl-pager { display: none !important; }
+  .xl-nav, .xl-export, .xl-actions, .xl-jump, .xl-pager, .xl-finish, .xl-dash, .xl-tip { display: none !important; }
   .wrap.xl-shell { display: block; }
 }
 
