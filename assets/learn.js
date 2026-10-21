@@ -682,8 +682,8 @@ ${nextBtn()}<p class="lx-sub">${back}</p>`;
           .map((p, j) => {
             if (j !== it.k) return esc(p);
             const chars = [...p.replace(/[\s　]+$/, '')];
-            const last = chars.pop();
-            return `${esc(chars.join(''))}<b class="lx-target">${esc(last)}</b>${mark}`;
+            const word = chars.splice(chars.length - (it.t || 1)).join(''); // 一般是一个字；问双音词（如「左右」）时两个字一起标
+            return `${esc(chars.join(''))}<b class="lx-target">${esc(word)}</b>${mark}`;
           })
           .join('');
         return `<p class="lx-stem">${html}</p>`;
@@ -694,7 +694,8 @@ ${nextBtn()}<p class="lx-sub">${back}</p>`;
         const ctx = tr.ctx[c.item.x];
         const back = w.url ? `<a class="lx-link" href="${esc(w.url)}">看「${esc(w.w)}」的词条和例句</a>` : '';
         if (c.phase === 'ask') {
-          return `<p class="lx-tip">加粗的「${esc(w.w)}」在这里是什么意思？先想好（可以写在纸上），再看答案。</p>
+          const target = c.item.t ? [...ctx.q[c.item.k].replace(/[\s　]+$/, '')].slice(-c.item.t).join('') : w.w;
+          return `<p class="lx-tip">加粗的「${esc(target)}」在这里是什么意思？先想好（可以写在纸上），再看答案。</p>
 <div class="lx-actions"><button type="button" class="lx-btn" data-act="reveal">看答案</button></div>`;
         }
         const html = `<div class="lx-answer"><p class="lx-label">答案</p><p class="lx-ans">${esc(c.item.a)}</p></div>${ctx.t ? `<details class="lx-trans"><summary>看整段译文</summary><p>${esc(ctx.t)}</p></details>` : ''}`;
