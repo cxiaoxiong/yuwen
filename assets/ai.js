@@ -17,8 +17,10 @@
   const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const MAX_CTX = 12000;
   const HIST_KEY = 'ai-history:' + location.pathname;
+  const NEXT_KEY = 'ai-next:' + location.pathname;
   let mode = store.get('ai-mode') === 'teacher' ? 'teacher' : 'student';
   let history = session.get(HIST_KEY) || [];
+  let next = Array.isArray(session.get(NEXT_KEY)) ? session.get(NEXT_KEY) : [];   // 上一次回答末尾 AI 给出的追问；空时显示固定问题
   let busy = null;       // AbortController
   let selection = '';
 
@@ -26,6 +28,23 @@
     student: ['这一页讲了什么？', '帮我理解选中的这句话', '这个字词怎么解释？', '给我一点做题思路'],
     teacher: ['概括这一页的教学要点', '设计一个课堂提问', '出 3 道检测题', '这一页有哪些易错点？'],
   };
+
+  // 请求带 suggest: true 时，后端让模型在回答末尾另起一行写这个标记，下面几行是追问（见 server/ai-server.mjs 的 NEXT_MARK）
+  const NEXT_MARK = '【接着问】';
+  function splitNext(text) {
+    const i = text.indexOf(NEXT_MARK);
+    if (i < 0) {
+      // 流式过程中末尾可能只到了标记的前半截（如「【接」），先不显示
+      for (let k = NEXT_MARK.length - 1; k > 0; k--) if (text.endsWith(NEXT_MARK.slice(0, k))) return { body: text.slice(0, -k), next: [] };
+      return { body: text, next: [] };
+    }
+    const qs = [];
+    for (const raw of text.slice(i + NEXT_MARK.length).split('\n')) {
+      const q = raw.trim().replace(/^(?:(?:[-*•]|\d+[.、)])\s*)+/, '').replace(/\*\*/g, '').trim();
+      if (q.length >= 2 && q.length <= 40 && !qs.includes(q)) qs.push(q);
+    }
+    return { body: text.slice(0, i).trimEnd(), next: qs.slice(0, 3) };
+  }
 
   // ───── 取页面文字：当前标签栏优先；学生模式不带折叠答案 ─────
   // 克隆到屏幕外的可渲染容器里再取 innerText，这样段落换行才会保留，各栏目也都按展开状态取
@@ -138,7 +157,14 @@
     history.forEach((m) => addMsg(m.role, m.content));
   }
   function renderQuick() {
-    quick.innerHTML = QUICK[mode].map((q) => `<button type="button">${esc(q)}</button>`).join('');
+    quick.innerHTML = next.length
+      ? next.map((q) => `<button type="button">${esc(q)}</button>`).join('')
+      : QUICK[mode].map((q) => `<button type="button" data-static>${esc(q)}</button>`).join('');
+  }
+  function setNext(list) {
+    next = list;
+    session.set(NEXT_KEY, next);
+    renderQuick();
   }
   function syncMode() {
     $$('[data-ai-mode]', root).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.aiMode === mode)));
@@ -159,13 +185,13 @@
     out.textContent = '思考中…';
     const ac = new AbortController();
     setBusy(ac);
-    let full = '';
+    let full = '', stop = '';
     try {
       const res = await fetch(endpoint + '/chat', {
         method: 'POST',
         signal: ac.signal,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode, question, selection, page: pageContext(), history: history.slice(-8) }),
+        body: JSON.stringify({ mode, question, selection, suggest: true, page: pageContext(), history: history.slice(-8) }),
       });
       if (!res.ok) {
         let msg = 'AI 暂时不可用，请稍后再试。';
@@ -185,13 +211,19 @@
           if (!ev.startsWith('data:')) continue;
           const d = JSON.parse(ev.slice(5));
           if (d.error) throw new Error(d.error);
-          if (d.t) { full += d.t; out.classList.remove('ai-wait'); out.innerHTML = render(full); log.scrollTop = log.scrollHeight; }
+          if (d.t) { full += d.t; const body = splitNext(full).body; if (body) { out.classList.remove('ai-wait'); out.innerHTML = render(body); log.scrollTop = log.scrollHeight; } }
         }
       }
     } catch (err) {
-      if (err.name === 'AbortError') full += full ? '\n（已停止）' : '';
-      else { out.classList.remove('ai-wait'); out.classList.add('ai-err'); out.textContent = err.message === 'Failed to fetch' ? 'AI 暂时连不上，请稍后再试。' : err.message; if (!full) { setBusy(null); return; } }
+      stop = err.name === 'AbortError' ? 'abort' : 'error';
+      if (stop === 'error') { out.classList.remove('ai-wait'); out.classList.add('ai-err'); out.textContent = err.message === 'Failed to fetch' ? 'AI 暂时连不上，请稍后再试。' : err.message; }
     }
+    // 没有完整答完（停止、出错）就不用这次的追问，回到固定问题
+    const parsed = splitNext(full);
+    setNext(stop ? [] : parsed.next);
+    full = parsed.body;
+    if (stop === 'error' && !full) { setBusy(null); return; }
+    if (stop === 'abort' && full) full += '\n（已停止）';
     if (full) {
       out.classList.remove('ai-wait');
       out.innerHTML = render(full);
@@ -219,15 +251,16 @@
   // ───── 事件 ─────
   fab.addEventListener('click', () => open(drawer.hidden));
   $('.ai-close', root).addEventListener('click', () => { open(false); fab.focus(); });
-  $('.ai-clear', root).addEventListener('click', () => { if (busy) busy.abort(); history = []; session.set(HIST_KEY, history); renderAll(); });
+  $('.ai-clear', root).addEventListener('click', () => { if (busy) busy.abort(); history = []; session.set(HIST_KEY, history); setNext([]); renderAll(); });
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !drawer.hidden) { open(false); fab.focus(); } });
   $$('[data-ai-mode]', root).forEach((b) => b.addEventListener('click', () => {
-    mode = b.dataset.aiMode; store.set('ai-mode', mode); syncMode(); renderAll();
+    mode = b.dataset.aiMode; store.set('ai-mode', mode); next = []; session.set(NEXT_KEY, next); syncMode(); renderAll();
   }));
   quick.addEventListener('click', (ev) => {
-    const q = ev.target.closest('button')?.textContent;
+    const btn = ev.target.closest('button');
+    const q = btn?.textContent;
     if (!q) return;
-    if (q.includes('选中') && !selection) { input.value = ''; input.placeholder = '先在页面上选中一句话，再点「问 AI」'; input.focus(); return; }
+    if (btn.hasAttribute('data-static') && q.includes('选中') && !selection) { input.value = ''; input.placeholder = '先在页面上选中一句话，再点「问 AI」'; input.focus(); return; }
     ask(q);
   });
   selBox.addEventListener('click', (ev) => { if (ev.target.closest('button')) { selection = ''; showSel(); } });
