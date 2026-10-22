@@ -695,6 +695,75 @@ em.dot { font-style: normal; -webkit-text-emphasis: filled dot; text-emphasis: f
 .dyl-fig img { display: block; max-width: min(100%, 560px); height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
 .dyl-fig figcaption, .dyl-diagram { font: 13px/1.7 var(--font-ui); color: var(--muted); margin-top: 6px; }
 .dyl-diagram { background: var(--surface-2); padding: 10px 14px; border-radius: 6px; overflow-x: auto; white-space: pre; }
+.dyl-structure-fig {
+  margin: 14px 0 20px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--accent-soft) 72%, transparent), transparent 30%),
+    linear-gradient(145deg, color-mix(in srgb, var(--surface) 94%, var(--mist)), var(--surface));
+  box-shadow: var(--shadow-soft);
+}
+.sm-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+  border-radius: calc(var(--radius) - 5px);
+  outline: none;
+}
+.sm-scroll:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent); }
+.sm-svg { display: block; width: 100%; min-width: 680px; height: auto; font-family: var(--font-ui); }
+.sm-edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 52%, var(--line-2));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sm-svg marker path { fill: color-mix(in srgb, var(--accent) 68%, var(--line-2)); }
+.sm-node-group rect {
+  fill: color-mix(in srgb, var(--surface) 96%, var(--accent-soft));
+  stroke: var(--line-2);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 5px 9px color-mix(in srgb, var(--deep) 8%, transparent));
+}
+.sm-node-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 10px 14px;
+  color: var(--ink-2);
+  font: 500 14px/1.55 var(--font-ui);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.sm-root rect { fill: var(--accent); stroke: color-mix(in srgb, var(--accent) 78%, var(--deep)); stroke-width: 1.5; }
+.sm-root .sm-node-label { color: #fffafc; font-family: var(--font-read); font-size: 16px; font-weight: 700; letter-spacing: .04em; }
+:root[data-theme="dark"] .sm-root .sm-node-label { color: var(--deep); }
+.sm-branch rect { fill: var(--accent-soft); stroke: color-mix(in srgb, var(--accent) 52%, var(--line)); }
+.sm-branch .sm-node-label { color: var(--accent); font-weight: 650; }
+.sm-answer rect { fill: var(--seal-soft); stroke: color-mix(in srgb, var(--seal) 58%, var(--line)); }
+.sm-answer .sm-node-label { color: var(--seal); font-weight: 650; }
+.sm-answer-leaf rect { fill: color-mix(in srgb, var(--seal-soft) 62%, var(--surface)); }
+.sm-answer-leaf .sm-node-label { color: var(--ink); }
+.dyl-structure-fig > figcaption { margin: 8px 2px 0; }
+.sm-original { margin-top: 6px; color: var(--muted); font: 12.5px/1.6 var(--font-ui); }
+.sm-original summary { width: fit-content; cursor: pointer; color: var(--accent); }
+.sm-original[open] summary { margin-bottom: 8px; }
+.sm-original img { max-width: min(100%, 720px); }
+@media (max-width: 700px) {
+  .dyl-structure-fig { margin-inline: -4px; padding: 10px; border-radius: 12px; }
+  .sm-svg { min-width: 620px; }
+}
+@media print {
+  .sm-scroll { overflow: visible; }
+  .sm-svg { min-width: 0; }
+  .sm-original { display: none; }
+}
 .guide-wrap > summary {
   cursor: pointer; display: inline-block; list-style: none; font-size: 13.5px; color: var(--accent); padding: 6px 14px;
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 8px; margin: 4px 0 8px;
@@ -1650,27 +1719,8 @@ details.fw-step > summary { font-weight: 600; }
 .rv-sub b, .rv-nav-off .rv-sub b { color: var(--muted); font-weight: 400; }
 .rv-sub a[aria-current="page"] b { color: inherit; }
 
-/* 课程标准：目录、学习任务群与教材反向关联 */
-.standards-head { margin-bottom: 34px; }
-.standards-facts { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
-.standards-task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-.standards-task { display: flex; align-items: center; gap: 13px; min-width: 0; padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); box-shadow: var(--shadow-soft); }
-.standards-task:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); text-decoration: none; transform: translateY(-1px); }
-.standards-task > b { flex: none; display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; background: var(--seal-soft); color: var(--seal); font-size: 13px; }
-.standards-task > span { min-width: 0; font-weight: 600; line-height: 1.45; }
-.standards-task small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; font-size: 12.5px; }
-.standards-groups { display: grid; gap: 30px; }
-.standards-groups > section > h3 { margin: 0 0 11px; font: 600 17px/1.5 var(--font-read); color: var(--ink-2); }
-.standards-detail { max-width: 940px; }
-.standards-prose { margin-top: 6px; }
-.standards-related .sub-title + .mini-grid { margin-bottom: 24px; }
-.standards-unit-link { margin-top: 30px; }
-
-@media (max-width: 720px) {
-  .standards-task-grid { grid-template-columns: 1fr; }
-  .standards-detail .pager { grid-template-columns: 1fr; }
-  .standards-detail .pager a.next { text-align: left; }
-}
+/* 课程标准（内联在单元页）：课文页卡片锚点跳过来时，给吸顶导航 + 吸顶标签栏留出滚动补偿 */
+.unit-standard { scroll-margin-top: calc(var(--header-h) + 60px); }
 
 /* ───── 柔和工作台：共享外观 ───── */
 body {
