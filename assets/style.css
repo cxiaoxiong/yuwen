@@ -704,6 +704,11 @@ em.dot { font-style: normal; -webkit-text-emphasis: filled dot; text-emphasis: f
 .guide { font-family: var(--font-read); font-size: calc(16px * var(--reading-scale)); line-height: 1.85; }
 .guide p { margin: .2em 0; }
 .guide details.answer { margin: .2em 0 .8em; }
+.dyl-toolbar { padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.dyl-shared { margin: 0 0 14px; padding: 10px 14px; border-left: 3px solid var(--seal); background: var(--surface-2); border-radius: 0 8px 8px 0; }
+.dyl-toc { margin: 0 0 14px; padding: 2px 0 10px; border-bottom: 1px dashed var(--line); }
+.dyl-toc a { padding: 5px 11px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
+.dyl-toc a:hover { background: var(--accent-soft); color: var(--accent); text-decoration: none; }
 .dyl-region { font: 600 17px var(--font-read); color: var(--seal); letter-spacing: .2em; margin: 1.8em 0 .6em; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
 .guide > .dyl-region:first-child, .guide > .dyl-col:first-child { margin-top: .4em; }
 .dyl-col { font: 600 14.5px var(--font-ui); color: var(--accent); letter-spacing: .1em; margin: 1.4em 0 .4em; }
@@ -1645,6 +1650,28 @@ details.fw-step > summary { font-weight: 600; }
 .rv-sub b, .rv-nav-off .rv-sub b { color: var(--muted); font-weight: 400; }
 .rv-sub a[aria-current="page"] b { color: inherit; }
 
+/* 课程标准：目录、学习任务群与教材反向关联 */
+.standards-head { margin-bottom: 34px; }
+.standards-facts { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
+.standards-task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.standards-task { display: flex; align-items: center; gap: 13px; min-width: 0; padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); box-shadow: var(--shadow-soft); }
+.standards-task:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); text-decoration: none; transform: translateY(-1px); }
+.standards-task > b { flex: none; display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; background: var(--seal-soft); color: var(--seal); font-size: 13px; }
+.standards-task > span { min-width: 0; font-weight: 600; line-height: 1.45; }
+.standards-task small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; font-size: 12.5px; }
+.standards-groups { display: grid; gap: 30px; }
+.standards-groups > section > h3 { margin: 0 0 11px; font: 600 17px/1.5 var(--font-read); color: var(--ink-2); }
+.standards-detail { max-width: 940px; }
+.standards-prose { margin-top: 6px; }
+.standards-related .sub-title + .mini-grid { margin-bottom: 24px; }
+.standards-unit-link { margin-top: 30px; }
+
+@media (max-width: 720px) {
+  .standards-task-grid { grid-template-columns: 1fr; }
+  .standards-detail .pager { grid-template-columns: 1fr; }
+  .standards-detail .pager a.next { text-align: left; }
+}
+
 /* ───── 柔和工作台：共享外观 ───── */
 body {
   background: radial-gradient(ellipse 70% 460px at 85% 0, color-mix(in srgb, var(--seal-soft) 64%, transparent), transparent 78%), var(--bg);
@@ -1821,6 +1848,12 @@ a.card:hover, a.mini-card:hover, .gk-card a:hover, .pager a:hover, .hm-card:hove
   .tabs { gap: 3px; margin-inline: -2px; padding: 6px; border-radius: 13px; }
   .tabs.more-r::after { margin: -6px -6px -6px 0; }
   .tab { padding: 8px 12px; font-size: 13.5px; }
+  .dyl-toolbar { align-items: flex-start; gap: 10px; }
+  .dyl-toolbar > span { line-height: 1.6; }
+  .dyl-toolbar .btn-ghost { flex: none; }
+  .dyl-toc { flex-wrap: nowrap; overflow-x: auto; margin-inline: -18px; padding-inline: 18px; scrollbar-width: none; }
+  .dyl-toc::-webkit-scrollbar { display: none; }
+  .dyl-toc a { flex: none; }
   .site-footer { margin-top: 64px; }
   .hm-hero { display: flex; flex-direction: column; margin-top: 14px; width: calc(100% - 28px); min-height: 0; border-radius: 23px; }
   /* .wrap 的 margin: auto 会让纵向 flex 子项不再拉伸、按搜索框固有宽度撑开，这里显式铺满 */
