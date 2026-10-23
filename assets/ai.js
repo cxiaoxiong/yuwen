@@ -1,305 +1,37 @@
-// AI 助教 —— 抽屉式问答（无依赖）。页面文字在浏览器里取，API key 只在后端。
-(function () {
-  'use strict';
-  // 默认同源接口：线上由 Nginx 把 /api/ai/ 反向代理到本机 AI 后端（见 server/deploy/）；本地 npm run serve 也会代理。
-  // GitHub Pages 构建设置了 AI_ENDPOINT 时，页面带 <meta name="ai-endpoint">，改走那个跨域地址（CORS 由后端 ALLOWED_ORIGIN 放行）。
-  const endpoint = document.querySelector('meta[name="ai-endpoint"]')?.content || '/api/ai';
-  const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
-  const store = {
-    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 忽略 */ } },
-  };
-  const session = {
-    get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch (e) { return null; } },
-    set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 忽略 */ } },
-  };
-  const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const MAX_CTX = 12000;
-  const HIST_KEY = 'ai-history:' + location.pathname;
-  const NEXT_KEY = 'ai-next:' + location.pathname;
-  let mode = store.get('ai-mode') === 'teacher' ? 'teacher' : 'student';
-  let history = session.get(HIST_KEY) || [];
-  let next = Array.isArray(session.get(NEXT_KEY)) ? session.get(NEXT_KEY) : [];   // 上一次回答末尾 AI 给出的追问；空时显示固定问题
-  let busy = null;       // AbortController
-  let selection = '';
+(function(){"use strict";const D=document.querySelector('meta[name="ai-endpoint"]')?.content||"/api/ai",r=(t,e=document)=>e.querySelector(t),w=(t,e=document)=>Array.from(e.querySelectorAll(t)),J={get(t){try{return localStorage.getItem(t)}catch{return null}},set(t,e){try{localStorage.setItem(t,e)}catch{}}},x={get(t){try{return JSON.parse(sessionStorage.getItem(t))}catch{return null}},set(t,e){try{sessionStorage.setItem(t,JSON.stringify(e))}catch{}}},T=t=>t.replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[e]),z=12e3,I="ai-history:"+location.pathname,S="ai-next:"+location.pathname;let E=J.get("ai-mode")==="teacher"?"teacher":"student",p=x.get(I)||[],L=Array.isArray(x.get(S))?x.get(S):[],k=null,f="";const G={student:["\u8FD9\u4E00\u9875\u8BB2\u4E86\u4EC0\u4E48\uFF1F","\u5E2E\u6211\u7406\u89E3\u9009\u4E2D\u7684\u8FD9\u53E5\u8BDD","\u8FD9\u4E2A\u5B57\u8BCD\u600E\u4E48\u89E3\u91CA\uFF1F","\u7ED9\u6211\u4E00\u70B9\u505A\u9898\u601D\u8DEF"],teacher:["\u6982\u62EC\u8FD9\u4E00\u9875\u7684\u6559\u5B66\u8981\u70B9","\u8BBE\u8BA1\u4E00\u4E2A\u8BFE\u5802\u63D0\u95EE","\u51FA 3 \u9053\u68C0\u6D4B\u9898","\u8FD9\u4E00\u9875\u6709\u54EA\u4E9B\u6613\u9519\u70B9\uFF1F"]},$="\u3010\u63A5\u7740\u95EE\u3011";function R(t){const e=t.indexOf($);if(e<0){for(let n=$.length-1;n>0;n--)if(t.endsWith($.slice(0,n)))return{body:t.slice(0,-n),next:[]};return{body:t,next:[]}}const a=[];for(const n of t.slice(e+$.length).split(`
+`)){const s=n.trim().replace(/^(?:(?:[-*•]|\d+[.、)])\s*)+/,"").replace(/\*\*/g,"").trim();s.length>=2&&s.length<=40&&!a.includes(s)&&a.push(s)}return{body:t.slice(0,e).trimEnd(),next:a.slice(0,3)}}function V(){const t=r("#main"),a={title:document.querySelector("h1")?.textContent.trim()||document.title,path:location.pathname};if(!t)return{...a,text:""};const n=document.createElement("div");n.style.cssText="position:fixed;left:-99999px;top:0;width:800px;pointer-events:none";const s=t.cloneNode(!0);n.appendChild(s),document.body.appendChild(n);try{w("script,style,svg,nav,.to-top,.tabs,[data-ai-skip]",s).forEach(l=>l.remove()),E==="student"&&w("details.answer",s).forEach(l=>l.remove()),w("details",s).forEach(l=>{l.open=!0});const v=l=>l.replace(/[ \t]+\n/g,`
+`).replace(/\n{3,}/g,`
 
-  const QUICK = {
-    student: ['这一页讲了什么？', '帮我理解选中的这句话', '这个字词怎么解释？', '给我一点做题思路'],
-    teacher: ['概括这一页的教学要点', '设计一个课堂提问', '出 3 道检测题', '这一页有哪些易错点？'],
-  };
+`).trim(),o=w(".panel[data-panel]",s);let g;if(o.length){const l=r(".panel.active",t)?.dataset.panel,u=o.find(c=>c.dataset.panel===l)||o[0],d=c=>r(`#tabbtn-${c.dataset.panel}`,t)?.textContent.replace(/\d+$/,"").trim()||c.dataset.panel;o.forEach(c=>{c.style.display="block"});const A=[`\u3010\u5F53\u524D\u680F\u76EE\uFF1A${d(u)}\u3011
+${v(u.innerText)}`];o.forEach(c=>{c!==u&&A.push(`\u3010\u680F\u76EE\uFF1A${d(c)}\u3011
+${v(c.innerText)}`)}),g=A.join(`
 
-  // 请求带 suggest: true 时，后端让模型在回答末尾另起一行写这个标记，下面几行是追问（见 server/ai-server.mjs 的 NEXT_MARK）
-  const NEXT_MARK = '【接着问】';
-  function splitNext(text) {
-    const i = text.indexOf(NEXT_MARK);
-    if (i < 0) {
-      // 流式过程中末尾可能只到了标记的前半截（如「【接」），先不显示
-      for (let k = NEXT_MARK.length - 1; k > 0; k--) if (text.endsWith(NEXT_MARK.slice(0, k))) return { body: text.slice(0, -k), next: [] };
-      return { body: text, next: [] };
-    }
-    const qs = [];
-    for (const raw of text.slice(i + NEXT_MARK.length).split('\n')) {
-      const q = raw.trim().replace(/^(?:(?:[-*•]|\d+[.、)])\s*)+/, '').replace(/\*\*/g, '').trim();
-      if (q.length >= 2 && q.length <= 40 && !qs.includes(q)) qs.push(q);
-    }
-    return { body: text.slice(0, i).trimEnd(), next: qs.slice(0, 3) };
-  }
-
-  // ───── 取页面文字：当前标签栏优先；学生模式不带折叠答案 ─────
-  // 克隆到屏幕外的可渲染容器里再取 innerText，这样段落换行才会保留，各栏目也都按展开状态取
-  function pageContext() {
-    const main = $('#main');
-    const title = document.querySelector('h1')?.textContent.trim() || document.title;
-    const base = { title, path: location.pathname };
-    if (!main) return { ...base, text: '' };
-    const box = document.createElement('div');
-    box.style.cssText = 'position:fixed;left:-99999px;top:0;width:800px;pointer-events:none';
-    const root = main.cloneNode(true);
-    box.appendChild(root);
-    document.body.appendChild(box);
-    try {
-      $$('script,style,svg,nav,.to-top,.tabs,[data-ai-skip]', root).forEach((n) => n.remove());
-      if (mode === 'student') $$('details.answer', root).forEach((n) => n.remove());
-      $$('details', root).forEach((n) => { n.open = true; });
-      const clean = (t) => t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-      const panels = $$('.panel[data-panel]', root);
-      let text;
-      if (panels.length) {
-        const activeKey = $('.panel.active', main)?.dataset.panel;
-        const active = panels.find((p) => p.dataset.panel === activeKey) || panels[0];
-        const label = (p) => $(`#tabbtn-${p.dataset.panel}`, main)?.textContent.replace(/\d+$/, '').trim() || p.dataset.panel;
-        panels.forEach((p) => { p.style.display = 'block'; });
-        const chunks = [`【当前栏目：${label(active)}】\n${clean(active.innerText)}`];
-        panels.forEach((p) => { if (p !== active) chunks.push(`【栏目：${label(p)}】\n${clean(p.innerText)}`); });
-        text = chunks.join('\n\n');
-      } else {
-        text = clean(root.innerText);
-      }
-      return { ...base, text: text.slice(0, MAX_CTX) };
-    } finally {
-      box.remove();
-    }
-  }
-
-  // ───── 界面 ─────
-  const root = document.createElement('div');
-  root.className = 'ai-root';
-  root.setAttribute('data-ai-skip', '');
-  root.innerHTML = `
-    <button class="ai-fab" type="button" aria-label="打开 AI 助教" aria-expanded="false" aria-controls="ai-drawer">
+`)}else g=v(s.innerText);return{...a,text:g.slice(0,z)}}finally{n.remove()}}const i=document.querySelector(".ai-root")||document.createElement("div");i.className="ai-root",i.setAttribute("data-ai-skip",""),i.innerHTML=`
+    <button class="ai-fab" type="button" aria-label="\u6253\u5F00 AI \u52A9\u6559" aria-expanded="false" aria-controls="ai-drawer">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3c.9 3.3 1.7 4.1 5 5-3.3.9-4.1 1.7-5 5-.9-3.3-1.7-4.1-5-5 3.3-.9 4.1-1.7 5-5Zm6 10c.5 1.8.9 2.2 2.7 2.7-1.8.5-2.2.9-2.7 2.7-.5-1.8-.9-2.2-2.7-2.7 1.8-.5 2.2-.9 2.7-2.7ZM6.5 14c.6 2 1 2.4 3 3-2 .6-2.4 1-3 3-.6-2-1-2.4-3-3 2-.6 2.4-1 3-3Z" fill="currentColor"/></svg>
-      <span>问 AI</span>
+      <span>\u95EE AI</span>
     </button>
-    <aside class="ai-drawer" id="ai-drawer" role="dialog" aria-label="AI 助教" hidden>
+    <aside class="ai-drawer" id="ai-drawer" role="dialog" aria-label="AI \u52A9\u6559" hidden>
       <header class="ai-head">
-        <b>AI 助教</b>
-        <div class="ai-modes" role="group" aria-label="使用身份">
-          <button type="button" data-ai-mode="student" aria-pressed="false">学生</button>
-          <button type="button" data-ai-mode="teacher" aria-pressed="false">老师</button>
+        <b>AI \u52A9\u6559</b>
+        <div class="ai-modes" role="group" aria-label="\u4F7F\u7528\u8EAB\u4EFD">
+          <button type="button" data-ai-mode="student" aria-pressed="false">\u5B66\u751F</button>
+          <button type="button" data-ai-mode="teacher" aria-pressed="false">\u8001\u5E08</button>
         </div>
-        <button class="ai-clear" type="button" title="清空本页对话">清空</button>
-        <button class="ai-close" type="button" aria-label="关闭">×</button>
+        <button class="ai-clear" type="button" title="\u6E05\u7A7A\u672C\u9875\u5BF9\u8BDD">\u6E05\u7A7A</button>
+        <button class="ai-close" type="button" aria-label="\u5173\u95ED">\xD7</button>
       </header>
       <div class="ai-log" role="log" aria-live="polite"></div>
       <div class="ai-quick"></div>
       <div class="ai-sel" hidden></div>
       <form class="ai-form">
-        <textarea rows="2" maxlength="500" placeholder="问问这一页的内容…" aria-label="输入问题"></textarea>
-        <button type="submit" class="ai-send">发送</button>
+        <textarea rows="2" maxlength="500" placeholder="\u95EE\u95EE\u8FD9\u4E00\u9875\u7684\u5185\u5BB9\u2026" aria-label="\u8F93\u5165\u95EE\u9898"></textarea>
+        <button type="submit" class="ai-send">\u53D1\u9001</button>
       </form>
-      <p class="ai-note">回答由 AI 生成，可能有误，请以课本和教师用书为准。</p>
+      <p class="ai-note">\u56DE\u7B54\u7531 AI \u751F\u6210\uFF0C\u53EF\u80FD\u6709\u8BEF\uFF0C\u8BF7\u4EE5\u8BFE\u672C\u548C\u6559\u5E08\u7528\u4E66\u4E3A\u51C6\u3002</p>
     </aside>
-    <button class="ai-pick" type="button" hidden>问 AI</button>`;
-  document.body.appendChild(root);
-  const fab = $('.ai-fab', root), drawer = $('.ai-drawer', root), log = $('.ai-log', root);
-  const form = $('.ai-form', root), input = $('textarea', form), quick = $('.ai-quick', root);
-  const selBox = $('.ai-sel', root), pick = $('.ai-pick', root), send = $('.ai-send', root);
+    <button class="ai-pick" type="button" hidden>\u95EE AI</button>`,document.body.appendChild(i);const y=r(".ai-fab",i),N=r(".ai-drawer",i),h=r(".ai-log",i),H=r(".ai-form",i),m=r("textarea",H),_=r(".ai-quick",i),q=r(".ai-sel",i),b=r(".ai-pick",i),tt=r(".ai-send",i);function j(t){const e=T(t).split(`
+`);let a="",n=null;const s=()=>{n&&(a+=`<${n.t}>${n.items.join("")}</${n.t}>`,n=null)};for(const v of e){const o=v.trim(),g=o.match(/^[-*•]\s+(.*)/),l=o.match(/^\d+[.、)]\s*(.*)/),u=d=>d.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");if(g||l){const d=g?"ul":"ol";(!n||n.t!==d)&&(s(),n={t:d,items:[]}),n.items.push(`<li>${u((g||l)[1])}</li>`)}else o?(s(),a+=`<p>${u(o.replace(/^#{1,4}\s*/,""))}</p>`):s()}return s(),a}function O(t,e){const a=document.createElement("div");return a.className=`ai-msg ai-${t}`,t==="user"?a.textContent=e:a.innerHTML=j(e),h.appendChild(a),h.scrollTop=h.scrollHeight,a}function K(){if(h.innerHTML="",!p.length){const t=document.createElement("div");t.className="ai-msg ai-assistant ai-hello",t.innerHTML=E==="student"?"<p>\u4F60\u597D\uFF01\u6211\u53EF\u4EE5\u5E2E\u4F60\u8BFB\u61C2\u8FD9\u4E00\u9875\u7684\u8BFE\u6587\u3001\u6CE8\u91CA\u548C\u7EC3\u4E60\u3002\u505A\u9898\u65F6\u6211\u4F1A\u5148\u7ED9\u601D\u8DEF\u548C\u63D0\u793A\uFF0C\u800C\u4E0D\u662F\u76F4\u63A5\u7ED9\u7B54\u6848\u3002</p>":"<p>\u60A8\u597D\uFF01\u6211\u53EF\u4EE5\u7ED3\u5408\u8FD9\u4E00\u9875\u7684\u8D44\u6599\uFF0C\u5E2E\u60A8\u68B3\u7406\u6559\u5B66\u8981\u70B9\u3001\u8BBE\u8BA1\u63D0\u95EE\u3001\u51FA\u9898\u6216\u8BB2\u89E3\u7B54\u6848\u3002</p>",h.appendChild(t)}p.forEach(t=>O(t.role,t.content))}function W(){_.innerHTML=L.length?L.map(t=>`<button type="button">${T(t)}</button>`).join(""):G[E].map(t=>`<button type="button" data-static>${T(t)}</button>`).join("")}function Y(t){L=t,x.set(S,L),W()}function Z(){w("[data-ai-mode]",i).forEach(t=>t.setAttribute("aria-pressed",String(t.dataset.aiMode===E))),W()}function X(t){k=t,tt.textContent=t?"\u505C\u6B62":"\u53D1\u9001",m.disabled=!1}async function Q(t){if(t=t.trim(),!t||k)return;O("user",t);const e=O("assistant","");e.classList.add("ai-wait"),e.textContent="\u601D\u8003\u4E2D\u2026";const a=new AbortController;X(a);let n="",s="";try{const o=await fetch(D+"/chat",{method:"POST",signal:a.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:E,question:t,selection:f,suggest:!0,page:V(),history:p.slice(-8)})});if(!o.ok){let d="AI \u6682\u65F6\u4E0D\u53EF\u7528\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5\u3002";try{d=(await o.json()).error||d}catch{}throw new Error(d)}const g=o.body.getReader(),l=new TextDecoder;let u="";for(;;){const{value:d,done:A}=await g.read();if(A)break;u+=l.decode(d,{stream:!0});let c;for(;(c=u.indexOf(`
 
-  // 轻量渲染：转义后只支持粗体、列表、段落
-  function render(text) {
-    const lines = esc(text).split('\n');
-    let html = '', list = null;
-    const flush = () => { if (list) { html += `<${list.t}>${list.items.join('')}</${list.t}>`; list = null; } };
-    for (const raw of lines) {
-      const line = raw.trim();
-      const b = line.match(/^[-*•]\s+(.*)/), n = line.match(/^\d+[.、)]\s*(.*)/);
-      const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      if (b || n) {
-        const t = b ? 'ul' : 'ol';
-        if (!list || list.t !== t) { flush(); list = { t, items: [] }; }
-        list.items.push(`<li>${inline((b || n)[1])}</li>`);
-      } else if (line) { flush(); html += `<p>${inline(line.replace(/^#{1,4}\s*/, ''))}</p>`; }
-      else flush();
-    }
-    flush();
-    return html;
-  }
-
-  function addMsg(role, text) {
-    const el = document.createElement('div');
-    el.className = `ai-msg ai-${role}`;
-    if (role === 'user') el.textContent = text; else el.innerHTML = render(text);
-    log.appendChild(el);
-    log.scrollTop = log.scrollHeight;
-    return el;
-  }
-  function renderAll() {
-    log.innerHTML = '';
-    if (!history.length) {
-      const hello = document.createElement('div');
-      hello.className = 'ai-msg ai-assistant ai-hello';
-      hello.innerHTML = mode === 'student'
-        ? '<p>你好！我可以帮你读懂这一页的课文、注释和练习。做题时我会先给思路和提示，而不是直接给答案。</p>'
-        : '<p>您好！我可以结合这一页的资料，帮您梳理教学要点、设计提问、出题或讲解答案。</p>';
-      log.appendChild(hello);
-    }
-    history.forEach((m) => addMsg(m.role, m.content));
-  }
-  function renderQuick() {
-    quick.innerHTML = next.length
-      ? next.map((q) => `<button type="button">${esc(q)}</button>`).join('')
-      : QUICK[mode].map((q) => `<button type="button" data-static>${esc(q)}</button>`).join('');
-  }
-  function setNext(list) {
-    next = list;
-    session.set(NEXT_KEY, next);
-    renderQuick();
-  }
-  function syncMode() {
-    $$('[data-ai-mode]', root).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.aiMode === mode)));
-    renderQuick();
-  }
-  function setBusy(b) {
-    busy = b;
-    send.textContent = b ? '停止' : '发送';
-    input.disabled = false;
-  }
-
-  async function ask(question) {
-    question = question.trim();
-    if (!question || busy) return;
-    addMsg('user', question);
-    const out = addMsg('assistant', '');
-    out.classList.add('ai-wait');
-    out.textContent = '思考中…';
-    const ac = new AbortController();
-    setBusy(ac);
-    let full = '', stop = '';
-    try {
-      const res = await fetch(endpoint + '/chat', {
-        method: 'POST',
-        signal: ac.signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode, question, selection, suggest: true, page: pageContext(), history: history.slice(-8) }),
-      });
-      if (!res.ok) {
-        let msg = 'AI 暂时不可用，请稍后再试。';
-        try { msg = (await res.json()).error || msg; } catch (e) { /* 忽略 */ }
-        throw new Error(msg);
-      }
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let buf = '';
-      for (;;) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let i;
-        while ((i = buf.indexOf('\n\n')) >= 0) {
-          const ev = buf.slice(0, i); buf = buf.slice(i + 2);
-          if (!ev.startsWith('data:')) continue;
-          const d = JSON.parse(ev.slice(5));
-          if (d.error) throw new Error(d.error);
-          if (d.t) { full += d.t; const body = splitNext(full).body; if (body) { out.classList.remove('ai-wait'); out.innerHTML = render(body); log.scrollTop = log.scrollHeight; } }
-        }
-      }
-    } catch (err) {
-      stop = err.name === 'AbortError' ? 'abort' : 'error';
-      if (stop === 'error') { out.classList.remove('ai-wait'); out.classList.add('ai-err'); out.textContent = err.message === 'Failed to fetch' ? 'AI 暂时连不上，请稍后再试。' : err.message; }
-    }
-    // 没有完整答完（停止、出错）就不用这次的追问，回到固定问题
-    const parsed = splitNext(full);
-    setNext(stop ? [] : parsed.next);
-    full = parsed.body;
-    if (stop === 'error' && !full) { setBusy(null); return; }
-    if (stop === 'abort' && full) full += '\n（已停止）';
-    if (full) {
-      out.classList.remove('ai-wait');
-      out.innerHTML = render(full);
-      history.push({ role: 'user', content: question }, { role: 'assistant', content: full });
-      history = history.slice(-12);
-      session.set(HIST_KEY, history);
-    } else if (out.classList.contains('ai-wait')) out.remove();
-    selection = '';
-    showSel();
-    setBusy(null);
-  }
-
-  function showSel() {
-    selBox.hidden = !selection;
-    selBox.innerHTML = selection ? `<span>已选：${esc(selection.slice(0, 60))}${selection.length > 60 ? '…' : ''}</span><button type="button" aria-label="取消选段">×</button>` : '';
-  }
-
-  function open(v) {
-    drawer.hidden = !v;
-    fab.setAttribute('aria-expanded', String(v));
-    root.classList.toggle('is-open', v);
-    if (v) { input.focus({ preventScroll: true }); log.scrollTop = log.scrollHeight; }
-  }
-
-  // ───── 事件 ─────
-  fab.addEventListener('click', () => open(drawer.hidden));
-  $('.ai-close', root).addEventListener('click', () => { open(false); fab.focus(); });
-  $('.ai-clear', root).addEventListener('click', () => { if (busy) busy.abort(); history = []; session.set(HIST_KEY, history); setNext([]); renderAll(); });
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !drawer.hidden) { open(false); fab.focus(); } });
-  $$('[data-ai-mode]', root).forEach((b) => b.addEventListener('click', () => {
-    mode = b.dataset.aiMode; store.set('ai-mode', mode); next = []; session.set(NEXT_KEY, next); syncMode(); renderAll();
-  }));
-  quick.addEventListener('click', (ev) => {
-    const btn = ev.target.closest('button');
-    const q = btn?.textContent;
-    if (!q) return;
-    if (btn.hasAttribute('data-static') && q.includes('选中') && !selection) { input.value = ''; input.placeholder = '先在页面上选中一句话，再点「问 AI」'; input.focus(); return; }
-    ask(q);
-  });
-  selBox.addEventListener('click', (ev) => { if (ev.target.closest('button')) { selection = ''; showSel(); } });
-  form.addEventListener('submit', (ev) => {
-    ev.preventDefault();
-    if (busy) { busy.abort(); return; }
-    const q = input.value; input.value = ''; ask(q);
-  });
-  input.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); form.requestSubmit(); }
-  });
-
-  // 选中页面文字 → 浮出「问 AI」
-  let pickTimer;
-  document.addEventListener('selectionchange', () => {
-    clearTimeout(pickTimer);
-    pickTimer = setTimeout(() => {
-      const sel = getSelection();
-      const text = sel && !sel.isCollapsed ? sel.toString().trim() : '';
-      if (!text || text.length < 2 || root.contains(sel.anchorNode) || !$('#main')?.contains(sel.anchorNode)) { pick.hidden = true; return; }
-      const r = sel.getRangeAt(0).getBoundingClientRect();
-      pick.dataset.text = text.slice(0, 1000);
-      pick.style.top = `${Math.max(8, r.top + scrollY - 40)}px`;
-      pick.style.left = `${Math.min(Math.max(8, r.left + scrollX), document.documentElement.clientWidth - 80)}px`;
-      pick.hidden = false;
-    }, 200);
-  });
-  pick.addEventListener('mousedown', (ev) => ev.preventDefault());
-  pick.addEventListener('click', () => {
-    selection = pick.dataset.text || '';
-    pick.hidden = true;
-    showSel(); open(true); input.focus();
-  });
-
-  // 服务不可用时给出提示（不影响页面其他功能）
-  fetch(endpoint + '/health').then((r) => r.json()).then((d) => {
-    if (!d.ok) { fab.classList.add('is-off'); fab.title = 'AI 暂不可用'; }
-  }).catch(() => { fab.classList.add('is-off'); fab.title = 'AI 暂不可用'; });
-
-  syncMode();
-  renderAll();
-})();
+`))>=0;){const P=u.slice(0,c);if(u=u.slice(c+2),!P.startsWith("data:"))continue;const M=JSON.parse(P.slice(5));if(M.error)throw new Error(M.error);if(M.t){n+=M.t;const U=R(n).body;U&&(e.classList.remove("ai-wait"),e.innerHTML=j(U),h.scrollTop=h.scrollHeight)}}}}catch(o){s=o.name==="AbortError"?"abort":"error",s==="error"&&(e.classList.remove("ai-wait"),e.classList.add("ai-err"),e.textContent=o.message==="Failed to fetch"?"AI \u6682\u65F6\u8FDE\u4E0D\u4E0A\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5\u3002":o.message)}const v=R(n);if(Y(s?[]:v.next),n=v.body,s==="error"&&!n){X(null);return}s==="abort"&&n&&(n+=`
+\uFF08\u5DF2\u505C\u6B62\uFF09`),n?(e.classList.remove("ai-wait"),e.innerHTML=j(n),p.push({role:"user",content:t},{role:"assistant",content:n}),p=p.slice(-12),x.set(I,p)):e.classList.contains("ai-wait")&&e.remove(),f="",B(),X(null)}function B(){q.hidden=!f,q.innerHTML=f?`<span>\u5DF2\u9009\uFF1A${T(f.slice(0,60))}${f.length>60?"\u2026":""}</span><button type="button" aria-label="\u53D6\u6D88\u9009\u6BB5">\xD7</button>`:""}function C(t){N.hidden=!t,y.setAttribute("aria-expanded",String(t)),i.classList.toggle("is-open",t),t&&(m.focus({preventScroll:!0}),h.scrollTop=h.scrollHeight)}y.addEventListener("click",()=>C(N.hidden)),r(".ai-close",i).addEventListener("click",()=>{C(!1),y.focus()}),r(".ai-clear",i).addEventListener("click",()=>{k&&k.abort(),p=[],x.set(I,p),Y([]),K()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!N.hidden&&(C(!1),y.focus())}),w("[data-ai-mode]",i).forEach(t=>t.addEventListener("click",()=>{E=t.dataset.aiMode,J.set("ai-mode",E),L=[],x.set(S,L),Z(),K()})),_.addEventListener("click",t=>{const e=t.target.closest("button"),a=e?.textContent;if(a){if(e.hasAttribute("data-static")&&a.includes("\u9009\u4E2D")&&!f){m.value="",m.placeholder="\u5148\u5728\u9875\u9762\u4E0A\u9009\u4E2D\u4E00\u53E5\u8BDD\uFF0C\u518D\u70B9\u300C\u95EE AI\u300D",m.focus();return}Q(a)}}),q.addEventListener("click",t=>{t.target.closest("button")&&(f="",B())}),H.addEventListener("submit",t=>{if(t.preventDefault(),k){k.abort();return}const e=m.value;m.value="",Q(e)}),m.addEventListener("keydown",t=>{t.key==="Enter"&&!t.shiftKey&&!t.isComposing&&(t.preventDefault(),H.requestSubmit())});let F;document.addEventListener("selectionchange",()=>{clearTimeout(F),F=setTimeout(()=>{const t=getSelection(),e=t&&!t.isCollapsed?t.toString().trim():"";if(!e||e.length<2||i.contains(t.anchorNode)||!r("#main")?.contains(t.anchorNode)){b.hidden=!0;return}const a=t.getRangeAt(0).getBoundingClientRect();b.dataset.text=e.slice(0,1e3),b.style.top=`${Math.max(8,a.top+scrollY-40)}px`,b.style.left=`${Math.min(Math.max(8,a.left+scrollX),document.documentElement.clientWidth-80)}px`,b.hidden=!1},200)}),b.addEventListener("mousedown",t=>t.preventDefault()),b.addEventListener("click",()=>{f=b.dataset.text||"",b.hidden=!0,B(),C(!0),m.focus()}),fetch(D+"/health").then(t=>t.json()).then(t=>{t.ok||(y.classList.add("is-off"),y.title="AI \u6682\u4E0D\u53EF\u7528")}).catch(()=>{y.classList.add("is-off"),y.title="AI \u6682\u4E0D\u53EF\u7528"}),Z(),K()})();
